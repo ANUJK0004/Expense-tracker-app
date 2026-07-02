@@ -109,49 +109,62 @@ class HomeScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  Text("Recent Transactions", style: textStyle),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      "Recent Transactions",
+                      style: TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                   Expanded(
                     child: ListView(
                       scrollDirection: Axis.vertical,
                       children: [
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
+                        Divider(),
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
+                        Divider(),
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
+                        Divider(),
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
+                        Divider(),
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
+                        Divider(),
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
+                        Divider(),
                         ListTile(
+                          leading: Icon(Icons.dinner_dining),
                           title: Text("Food"),
                           trailing: Text("₹52,480"),
                         ),
-                        ListTile(
-                          title: Text("Food"),
-                          trailing: Text("₹52,480"),
-                        ),
-                        ListTile(
-                          title: Text("Food"),
-                          trailing: Text("₹52,480"),
-                        ),
-
-                        // Card(),
+                        Divider(),
                       ],
                     ),
                   ),
@@ -160,6 +173,61 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar : NavigationBar(
+          selectedIndex: 0,
+          indicatorColor: Colors.blue.shade100,
+          shadowColor: Colors.blue.shade100,
+          onDestinationSelected: (int index) {
+            if (index == 2) {
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => Container(
+                  height: MediaQuery.of(context).size.height / 2,
+                  width: MediaQuery.of(context).size.width,
+                  decoration:BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(topLeft: Radius.circular(23), topRight: Radius.circular(23))),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(
+                          "Add Expense",
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+            // else if(index == 2){
+            //   Navigator.pushNamed(context, '/settings');
+            // }
+          },
+          backgroundColor: Colors.blue.shade700,
+          surfaceTintColor: Colors.blue.shade100,
+          elevation: 5,
+          destinations: [
+            NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+            NavigationDestination(
+              icon: Icon(Icons.show_chart),
+              label: "Analytics",
+            ),
+            NavigationDestination(icon: Icon(Icons.add), label: "Add"),
+            NavigationDestination(
+              icon: Icon(Icons.monetization_on),
+              label: "Transactions",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.settings),
+              label: "Settings",
+            ),
+          ]
       ),
     );
   }
