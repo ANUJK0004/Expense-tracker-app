@@ -1,3 +1,4 @@
+import 'package:exes/widgets/expense_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenseButton extends StatelessWidget {
@@ -9,27 +10,7 @@ class AddExpenseButton extends StatelessWidget {
       onPressed: (){
         showModalBottomSheet(
           context: context,
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height / 2,
-            width: MediaQuery.of(context).size.width,
-            decoration:BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(23), topRight: Radius.circular(23))),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(
-                    "Add Expense",
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          builder: (context) => ExpenseBottomSheet(),
         );
       },
       backgroundColor: Colors.blue,

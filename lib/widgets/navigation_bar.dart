@@ -1,43 +1,40 @@
-import 'package:exes/widgets/floating_action_button.dart';
 import 'package:flutter/material.dart';
 
 class ScreensNavigationBar extends StatelessWidget {
-  const ScreensNavigationBar({super.key});
+  const ScreensNavigationBar({super.key, required this.currentIndex,required this.changedIndex});
+  final ValueChanged<int> changedIndex;
+  final int currentIndex;
 
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
-        selectedIndex: 0,
+        selectedIndex: currentIndex,
         indicatorColor: Colors.blue.shade100,
         shadowColor: Colors.blue.shade100,
         onDestinationSelected: (int index) {
-          if (index == 0) {
-            Navigator.of(context).pushNamed('/home');
-          } else if (index == 1) {
-            Navigator.of(context).pushNamed('lib/screens/analytics_screen.dart');
-          } else if (index == 3) {
-            Navigator.pushNamed(context, '/history');
-          } else if (index == 4) {
-            Navigator.pushNamed(context, '/settings');
-          }
+          changedIndex(index);
         },
         backgroundColor: Colors.blue.shade700,
         surfaceTintColor: Colors.blue.shade100,
         elevation: 5,
         destinations: [
-          NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+          NavigationDestination(icon: Icon(Icons.home),selectedIcon: Icon(Icons.home_outlined), label: "Home"),
           NavigationDestination(
             icon: Icon(Icons.show_chart),
             label: "Analytics",
+            selectedIcon: Icon(Icons.show_chart_outlined),
+            tooltip: "Expenses analysis",
           ),
-          AddExpenseButton(),
           NavigationDestination(
             icon: Icon(Icons.history),
             label: "History",
+            selectedIcon: Icon(Icons.history_outlined),
+            tooltip: "Transactions history",
           ),
           NavigationDestination(
             icon: Icon(Icons.settings),
             label: "Settings",
+            selectedIcon: Icon(Icons.settings_outlined),
           ),
         ]
     );

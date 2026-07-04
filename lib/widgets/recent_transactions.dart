@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class RecentTransactions extends StatelessWidget {
@@ -39,6 +40,9 @@ class RecentTransactions extends StatelessWidget {
             ),
             Expanded(
               child: ListView(
+                shrinkWrap: true,
+                physics: BouncingScrollPhysics(),
+                dragStartBehavior: DragStartBehavior.down,
                 scrollDirection: Axis.vertical,
                 children: [
                   ListTile(

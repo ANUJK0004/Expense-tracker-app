@@ -1,4 +1,4 @@
-import 'package:exes/screens/home_screen.dart';
+import 'package:exes/screens/navigation_screen.dart';
 import 'package:flutter/material.dart';
 
 void main(){
@@ -13,7 +13,7 @@ class Exes extends StatelessWidget {
     return MaterialApp(
       title: 'Exes - an expense tracker',
       debugShowCheckedModeBanner: false,
-      home : HomeScreen(),
+      home : NavigationScreen(),
     );
   }
 }
