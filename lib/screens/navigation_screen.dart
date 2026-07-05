@@ -19,7 +19,6 @@ class _NavigationScreenState extends State<NavigationScreen> {
   final screens = [
     HomeScreen(),
     AnalyticsScreen(),
-
     TransactionsHistory(),
     SettingsScreen(),
   ];

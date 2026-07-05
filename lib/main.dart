@@ -1,19 +1,21 @@
 import 'package:exes/screens/navigation_screen.dart';
 import 'package:flutter/material.dart';
 
-void main(){
-  runApp(Exes());
+void main () async{
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const ExesApp());
 }
 
-class Exes extends StatelessWidget {
-  const Exes({super.key});
+
+class ExesApp extends StatelessWidget {
+  const ExesApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Exes - an expense tracker',
       debugShowCheckedModeBanner: false,
-      home : NavigationScreen(),
+      home : const NavigationScreen(),
     );
   }
 }

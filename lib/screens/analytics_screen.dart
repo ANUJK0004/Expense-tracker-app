@@ -6,12 +6,12 @@ class AnalyticsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.brown.shade100,
+      backgroundColor: Colors.brown.shade300,
       appBar: AppBar(title: Text("Analytics"), centerTitle: true),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: Colors.brown.shade300,
+        color: Colors.brown.shade100,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
