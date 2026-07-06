@@ -1,24 +1,21 @@
+import 'package:exes/models/expense.dart';
 import 'package:exes/widgets/intro_card.dart';
 import 'package:exes/widgets/recent_transactions.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key,required this.transactions});
+  final List<ExpenseTransaction> transactions;
 
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       // crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IntroCard(),
+        IntroCard( transactions : transactions),
         // MonthlySpendingChart(),
-        RecentTransactions(),
+        RecentTransactions( transactions : transactions),
       ],
     );
   }

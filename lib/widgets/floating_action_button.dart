@@ -1,22 +1,13 @@
-import 'package:exes/widgets/expense_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 
 class AddExpenseButton extends StatelessWidget {
-  const AddExpenseButton({super.key});
+  const AddExpenseButton({super.key,required this.onPressed});
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: (){
-        final result = showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          builder: (context) => ExpenseBottomSheet(),
-        );
-        if (result == true) {
-          // loadTransactions();
-        }
-      },
+      onPressed: onPressed,
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
       elevation: 3,

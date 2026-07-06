@@ -1,8 +1,29 @@
+import 'package:exes/models/expense.dart';
 import 'package:exes/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 
 class IntroCard extends StatelessWidget {
-  const IntroCard({super.key});
+  const IntroCard({super.key,required this.transactions});
+
+  final List<ExpenseTransaction> transactions;
+
+  double currentBalance() {
+    double income = 0;
+    double expense = 0;
+
+    for(final transaction in transactions){
+
+      if(transaction.type == "Income"){
+        income += transaction.amount;
+      }else{
+        expense += transaction.amount;
+      }
+    }
+
+    final balance = income - expense;
+    return balance;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +52,7 @@ class IntroCard extends StatelessWidget {
               children: [
                 Text("Good Morning 👋", style: textStyle),
                 Text("Current Balance", style: textStyle),
-                Text("₹52,480", style: textStyle),
+                Text("₹${currentBalance().toStringAsFixed(2)}", style: textStyle),
               ],
             ),
           ),

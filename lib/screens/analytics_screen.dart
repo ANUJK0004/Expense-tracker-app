@@ -1,7 +1,9 @@
+import 'package:exes/models/expense.dart';
 import 'package:flutter/material.dart';
 
 class AnalyticsScreen extends StatelessWidget {
-  const AnalyticsScreen({super.key});
+  const AnalyticsScreen({super.key,required this.transactions});
+  final List<ExpenseTransaction> transactions;
 
   @override
   Widget build(BuildContext context) {

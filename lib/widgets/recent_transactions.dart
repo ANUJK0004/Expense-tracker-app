@@ -1,8 +1,9 @@
-import 'package:flutter/gestures.dart';
+import 'package:exes/models/expense.dart';
 import 'package:flutter/material.dart';
 
 class RecentTransactions extends StatelessWidget {
-  const RecentTransactions({super.key});
+  const RecentTransactions({super.key,required this.transactions});
+  final List<ExpenseTransaction> transactions;
 
   @override
   Widget build(BuildContext context) {
@@ -39,55 +40,20 @@ class RecentTransactions extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView(
+              child: ListView.builder(
                 shrinkWrap: true,
                 physics: BouncingScrollPhysics(),
-                dragStartBehavior: DragStartBehavior.down,
                 scrollDirection: Axis.vertical,
-                children: [
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                  ListTile(
-                    leading: Icon(Icons.dinner_dining),
-                    title: Text("Food"),
-                    trailing: Text("₹52,480"),
-                  ),
-                  Divider(),
-                ],
+                itemCount: transactions.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Icon(Icons.compare_arrows_sharp,color: transactions[index].type=="Expense"?Colors.red:Colors.green,size: 36,),
+                    title: Text(transactions[index].category),
+                    subtitle: Text(transactions[index].note),
+                    trailing: Text(transactions[index].amount.toString()),
+                    minTileHeight: 200,
+                  );
+                },
               ),
             ),
           ],

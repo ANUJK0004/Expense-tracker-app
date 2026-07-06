@@ -40,7 +40,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
-        height: MediaQuery.of(context).size.height,
+        height: MediaQuery.of(context).size.height * 0.75,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
           color: Colors.white,
@@ -280,12 +280,12 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                   children: [
                     OutlinedButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pop(context);
                       },
                       child: Text("Cancel"),
                     ),
                     ElevatedButton(
-                      onPressed: () async{
+                      onPressed: () async {
                         if (!_formKey.currentState!.validate()) return;
                         final amount = double.parse(_amountController.text);
                         final note = _noteController.text.trim();
@@ -297,11 +297,11 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                               type: selectedType,
                               date: selectedDate!,
                             );
-                          await DatabaseHelper.instance.insertTransaction(
-                            transaction,
-                          );
-                          if(!mounted) return;
-                        Navigator.pop(context,true);
+                        await DatabaseHelper.instance.insertTransaction(
+                          transaction,
+                        );
+                        if (!mounted) return;
+                        Navigator.pop(context, true);
                       },
                       child: Text("Save"),
                     ),
