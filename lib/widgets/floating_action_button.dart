@@ -8,10 +8,14 @@ class AddExpenseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: (){
-        showModalBottomSheet(
+        final result = showModalBottomSheet(
           context: context,
+          isScrollControlled: true,
           builder: (context) => ExpenseBottomSheet(),
         );
+        if (result == true) {
+          // loadTransactions();
+        }
       },
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
