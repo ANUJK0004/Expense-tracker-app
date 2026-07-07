@@ -51,7 +51,7 @@ class RecentTransactions extends StatelessWidget {
                     title: Text(transactions[index].category),
                     subtitle: Text(transactions[index].note),
                     trailing: Text(transactions[index].amount.toString()),
-                    minTileHeight: 200,
+                    // minTileHeight: 200,
                   );
                 },
               ),

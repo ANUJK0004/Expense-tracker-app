@@ -71,7 +71,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
         ),
         SettingsScreen(),
       ][currentIndex],
-      floatingActionButton: AddExpenseButton(  onPressed: openBottomSheet),
+      floatingActionButton: AddExpenseButton(onPressed: openBottomSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
   }

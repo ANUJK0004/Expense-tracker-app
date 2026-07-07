@@ -7,7 +7,7 @@ class IntroCard extends StatelessWidget {
 
   final List<ExpenseTransaction> transactions;
 
-  double currentBalance() {
+  Map<String,double> currentBalance() {
     double income = 0;
     double expense = 0;
 
@@ -19,9 +19,9 @@ class IntroCard extends StatelessWidget {
         expense += transaction.amount;
       }
     }
-
     final balance = income - expense;
-    return balance;
+    Map<String,double> map =  {'balance':balance,'income':income,'expense':expense};
+    return map;
   }
 
 
@@ -52,7 +52,7 @@ class IntroCard extends StatelessWidget {
               children: [
                 Text("Good Morning 👋", style: textStyle),
                 Text("Current Balance", style: textStyle),
-                Text("₹${currentBalance().toStringAsFixed(2)}", style: textStyle),
+                Text("₹${currentBalance()['balance']?.toStringAsFixed(2)}", style: textStyle),
               ],
             ),
           ),
@@ -64,13 +64,13 @@ class IntroCard extends StatelessWidget {
                 Column(
                   children: [
                     Text("Income", style: textStyle),
-                    Text("₹52,480", style: textStyle),
+                    Text("₹${currentBalance()['income']?.toStringAsFixed(2)}", style: textStyle),
                   ],
                 ),
                 Column(
                   children: [
                     Text("Expenses", style: textStyle),
-                    Text("22,520", style: textStyle),
+                    Text("₹${currentBalance()['expense']?.toStringAsFixed(2)}", style: textStyle),
                   ],
                 ),
               ],
