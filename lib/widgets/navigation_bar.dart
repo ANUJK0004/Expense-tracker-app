@@ -9,13 +9,13 @@ class ScreensNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return NavigationBar(
         selectedIndex: currentIndex,
-        indicatorColor: Colors.blue.shade100,
-        shadowColor: Colors.blue.shade100,
+        indicatorColor: Colors.brown.shade100,
+        shadowColor: Colors.brown.shade100,
         onDestinationSelected: (int index) {
           changedIndex(index);
         },
-        backgroundColor: Colors.blue.shade700,
-        surfaceTintColor: Colors.blue.shade100,
+        backgroundColor: Colors.brown.shade300,
+        surfaceTintColor: Colors.brown.shade100,
         elevation: 5,
         destinations: [
           NavigationDestination(icon: Icon(Icons.home),selectedIcon: Icon(Icons.home_outlined), label: "Home"),

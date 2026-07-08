@@ -73,7 +73,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: Colors.brown,
       bottomNavigationBar: ScreensNavigationBar(
         changedIndex: (index) {
           setState(() {

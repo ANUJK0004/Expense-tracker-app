@@ -33,11 +33,11 @@ class IntroCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.blue.shade500,
-            Colors.blue.shade200,
-            Colors.blue.shade300,
-            Colors.blue.shade200,
-            Colors.blue.shade500,
+            Colors.brown.shade500,
+            Colors.brown.shade200,
+            Colors.brown.shade300,
+            Colors.brown.shade200,
+            Colors.brown.shade500,
           ],
         ),
       ),

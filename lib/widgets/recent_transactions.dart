@@ -12,7 +12,7 @@ class RecentTransactions extends StatelessWidget {
         height: MediaQuery.of(context).size.height / 3,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.brown.shade50,
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(28),
             topLeft: Radius.circular(28),
