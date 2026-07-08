@@ -19,32 +19,55 @@ class NavigationScreen extends StatefulWidget {
 class _NavigationScreenState extends State<NavigationScreen> {
   int currentIndex = 0;
 
-
   List<ExpenseTransaction> transactions = [];
 
   Future<void> loadTransactions() async {
-
     transactions = await DatabaseHelper.instance.getAllTransactions();
-
     setState(() {});
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    loadTransactions();
   }
 
   Future<void> openBottomSheet() async {
     final added = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => const ExpenseBottomSheet(),
+      builder: (_) => ExpenseBottomSheet(onAdd: insertTransaction),
     );
 
     if (added == true) {
       await loadTransactions();
     }
+  }
+
+  Future<void> insertTransaction(ExpenseTransaction transaction) async {
+    await DatabaseHelper.instance.insertTransaction(transaction);
+  }
+
+  Future<void> deleteTransaction(ExpenseTransaction transaction) async {
+    await DatabaseHelper.instance.deleteTransaction(transaction.id!);
+    await loadTransactions();
+  }
+
+  Future<void> editTransaction(ExpenseTransaction transaction) async {
+
+    final updated = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => ExpenseBottomSheet(transaction: transaction,onUpdate: updateTransaction,),
+    );
+
+    if (updated == true) {
+      await loadTransactions();
+    }
+  }
+
+  Future<void> updateTransaction(ExpenseTransaction transaction) async {
+    await DatabaseHelper.instance.updateTransaction(transaction);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadTransactions();
   }
 
   @override
@@ -60,14 +83,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
         currentIndex: currentIndex,
       ),
       body: [
-        HomeScreen(
-          transactions: transactions,
-        ),
-        AnalyticsScreen(
-          transactions: transactions,
-        ),
+        HomeScreen(transactions: transactions),
+        AnalyticsScreen(transactions: transactions),
         TransactionsHistory(
           transactions: transactions,
+          onDelete: deleteTransaction,
+          onTap : editTransaction,
         ),
         SettingsScreen(),
       ][currentIndex],

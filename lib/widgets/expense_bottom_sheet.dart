@@ -1,9 +1,16 @@
-import 'package:exes/database/database_helper.dart';
 import 'package:exes/models/expense.dart';
 import 'package:flutter/material.dart';
 
 class ExpenseBottomSheet extends StatefulWidget {
-  const ExpenseBottomSheet({super.key});
+  const ExpenseBottomSheet({
+    super.key,
+    this.transaction,
+    this.onAdd,
+    this.onUpdate,
+  });
+  final ExpenseTransaction? transaction;
+  final Future<void> Function(ExpenseTransaction transaction)? onAdd;
+  final Future<void> Function(ExpenseTransaction transaction)? onUpdate;
 
   @override
   State<ExpenseBottomSheet> createState() => _ExpenseBottomSheetState();
@@ -28,6 +35,22 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.transaction != null) {
+      _amountController.text = widget.transaction!.amount.toString();
+
+      _noteController.text = widget.transaction!.note;
+
+      selectedCategory = widget.transaction!.category;
+
+      selectedType = widget.transaction!.type;
+
+      selectedDate = widget.transaction!.date;
+    }
+  }
 
   @override
   void dispose() {
@@ -287,21 +310,22 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                     ElevatedButton(
                       onPressed: () async {
                         if (!_formKey.currentState!.validate()) return;
-                        final amount = double.parse(_amountController.text);
-                        final note = _noteController.text.trim();
-                        final ExpenseTransaction transaction =
-                            ExpenseTransaction(
-                              amount: amount,
-                              category: selectedCategory,
-                              note: note,
-                              type: selectedType,
-                              date: selectedDate!,
-                            );
-                        await DatabaseHelper.instance.insertTransaction(
-                          transaction,
+
+                        final transaction = ExpenseTransaction(
+                          id: widget.transaction?.id,
+                          amount: double.parse(_amountController.text),
+                          category: selectedCategory,
+                          note: _noteController.text.trim(),
+                          type: selectedType,
+                          date: selectedDate!,
                         );
-                        if (!mounted) return;
-                        Navigator.pop(context, true);
+                        if (widget.transaction == null) {
+                          await widget.onAdd!(transaction);
+                        } else {
+                          await widget.onUpdate!(transaction);
+                        }
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop(true);
                       },
                       child: Text("Save"),
                     ),
