@@ -1,4 +1,5 @@
 import 'package:exes/models/expense.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class AnalyticsScreen extends StatefulWidget {
@@ -72,22 +73,69 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   Map<String, double> categoryTotals = {};
   void calculateCategoryTotals() {
+    categoryTotals.clear();
     for (final t in filteredTransactions) {
       if (t.type != "Expense") continue;
       categoryTotals[t.category] = (categoryTotals[t.category] ?? 0) + t.amount;
     }
   }
 
-  Map<DateTime,double> dailyTotals = {};
-  void calculateDailyTotals(){
-    for(final t in filteredTransactions){
+  Map<DateTime, double> dailyTotals = {};
+  void calculateDailyTotals() {
+    dailyTotals.clear();
+    for (final t in filteredTransactions) {
       final date = t.date;
       dailyTotals[date] = (dailyTotals[date] ?? 0) + t.amount;
     }
   }
 
+  List<PieChartSectionData> getPieChartSections() {
+    final colors = [
+      Colors.red,
+      Colors.orange,
+      Colors.blue,
+      Colors.green,
+      Colors.purple,
+      Colors.teal,
+      Colors.pink,
+      Colors.brown,
+      Colors.indigo,
+      Colors.amber,
+    ];
+
+    int index = 0;
+
+    return categoryTotals.entries.map((entry) {
+      final section = PieChartSectionData(
+        value: entry.value,
+        title: entry.key.split(" ").last,
+        radius: 70,
+        color: colors[index % colors.length],
+        titleStyle: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+      index++;
+      return section;
+    }).toList();
+  }
+
+  List<FlSpot> getLineSpots() {
+    final entries = dailyTotals.entries.toList()..sort((a,b)=>a.key.compareTo(b.key));
+
+    return List.generate(entries.length, (index) {
+      return FlSpot(index.toDouble(), entries[index].value);
+    }
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
+    calculateCategoryTotals();
+    calculateDailyTotals();
+    final balance = currentBalance();
     return Scaffold(
       backgroundColor: Colors.brown.shade100,
       appBar: AppBar(title: Text("Analytics"), centerTitle: true),
@@ -133,9 +181,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("This Month"),
-                    Text("Expense : ${currentBalance()['expense']}"),
-                    Text("Income : ${currentBalance()['income']}"),
-                    Text("Saving : ${currentBalance()['balance']}"),
+                    Text("Expense : ${balance['expense']}"),
+                    Text("Income : ${balance['income']}"),
+                    Text("Saving : ${balance['balance']}"),
                   ],
                 ),
               ),
@@ -154,7 +202,71 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.brown.shade50,
                     ),
-                    child: Column(children: [Text("Expense VS Income")]),
+                    child: Column(
+                      children: [
+                        Text("Expense vs Income"),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: BarChart(
+                              BarChartData(
+                                alignment: BarChartAlignment.spaceAround,
+                                borderData: FlBorderData(show: false),
+                                gridData: FlGridData(show: true),
+                                titlesData: FlTitlesData(
+                                  topTitles: AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                  rightTitles: AxisTitles(
+                                    sideTitles: SideTitles(showTitles: false),
+                                  ),
+                                  leftTitles: AxisTitles(
+                                    sideTitles: SideTitles(showTitles: true),
+                                  ),
+                                  bottomTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      getTitlesWidget: (value, meta) {
+                                        switch (value.toInt()) {
+                                          case 0:
+                                            return const Text("Expense");
+                                          case 1:
+                                            return const Text("Income");
+                                          default:
+                                            return const SizedBox();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                barGroups: [
+                                  BarChartGroupData(
+                                    x: 0,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: balance['expense']!,
+                                        width: 8,
+                                        color: Colors.red,
+                                      ),
+                                    ],
+                                  ),
+                                  BarChartGroupData(
+                                    x: 1,
+                                    barRods: [
+                                      BarChartRodData(
+                                        toY: balance['income']!,
+                                        width: 8,
+                                        color: Colors.green,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Container(
                     height: MediaQuery.of(context).size.width,
@@ -164,7 +276,23 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.brown.shade50,
                     ),
-                    child: Column(children: [Text("Expenses by category")]),
+                    child: Column(
+                      children: [
+                        Text("Category Distribution"),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: PieChart(
+                              PieChartData(
+                                centerSpaceRadius: 70,
+                                sectionsSpace: 3,
+                                sections: getPieChartSections(),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   Container(
                     height: MediaQuery.of(context).size.width * 0.75,
@@ -174,7 +302,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       borderRadius: BorderRadius.circular(20),
                       color: Colors.brown.shade50,
                     ),
-                    child: Column(children: [Text("Top Spending Categories")]),
+                    child: Column(
+                      children: [
+                        Text("Top Spending Categories"),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: LineChart(
+                                LineChartData(
+                                  lineBarsData: [
+                                    LineChartBarData(
+                                      spots: getLineSpots(),
+                                      isCurved: true,
+                                      color: Colors.brown,
+                                      barWidth: 4,
+                                      dotData: FlDotData(show: true),
+                                    )
+                                  ],
+                                )
+                            ),
+                          )
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
