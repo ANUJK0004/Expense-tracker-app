@@ -23,7 +23,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
 
   Future<void> loadTransactions() async {
     transactions = await DatabaseHelper.instance.getAllTransactions();
-    setState(() {});
+    if (!mounted) return;
+
+    setState(() {
+      transactions = transactions;
+    });
   }
 
   Future<void> openBottomSheet() async {
@@ -82,16 +86,19 @@ class _NavigationScreenState extends State<NavigationScreen> {
         },
         currentIndex: currentIndex,
       ),
-      body: [
-        HomeScreen(transactions: transactions),
-        AnalyticsScreen(transactions: transactions),
-        TransactionsHistory(
-          transactions: transactions,
-          onDelete: deleteTransaction,
-          onTap : editTransaction,
-        ),
-        SettingsScreen(),
-      ][currentIndex],
+      body: IndexedStack(
+        index: currentIndex,
+        children: [
+          HomeScreen(transactions: transactions),
+          AnalyticsScreen(transactions: transactions),
+          TransactionsHistory(
+            transactions: transactions,
+            onDelete: deleteTransaction,
+            onTap : editTransaction,
+          ),
+          SettingsScreen(),
+        ],
+      ),
       floatingActionButton: AddExpenseButton(onPressed: openBottomSheet),
       floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
     );
