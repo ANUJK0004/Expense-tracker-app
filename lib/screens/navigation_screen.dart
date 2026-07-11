@@ -68,6 +68,11 @@ class _NavigationScreenState extends State<NavigationScreen> {
     await DatabaseHelper.instance.updateTransaction(transaction);
   }
 
+  Future<void> clearDatabase() async {
+    await DatabaseHelper.instance.clearTransactions();
+    await loadTransactions();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -96,7 +101,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
             onDelete: deleteTransaction,
             onTap : editTransaction,
           ),
-          SettingsScreen(),
+          SettingsScreen(
+            onClearDatabase : clearDatabase,
+          ),
         ],
       ),
       floatingActionButton: AddExpenseButton(onPressed: openBottomSheet),

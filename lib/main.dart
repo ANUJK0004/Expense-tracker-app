@@ -1,9 +1,18 @@
 import 'package:exes/screens/navigation_screen.dart';
+import 'package:exes/theme/app_theme.dart';
+import 'package:exes/theme/theme_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main () async{
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ExesApp());
+  final controller = ThemeController();
+  await controller.loadTheme();
+
+  runApp(ChangeNotifierProvider(
+    create: (_) => controller,
+    child: const ExesApp(),
+  ));
 }
 
 
@@ -12,10 +21,15 @@ class ExesApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    final themeController = Provider.of<ThemeController>(context);
     return MaterialApp(
       title: 'Exes - an expense tracker',
       debugShowCheckedModeBanner: false,
-      home : const NavigationScreen(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeController.themeMode,
+      home: const NavigationScreen(),
     );
   }
 }
