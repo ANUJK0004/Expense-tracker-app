@@ -1,105 +1,227 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  static ThemeData lightTheme(Color seedColor) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: Brightness.light,
+    );
 
-  static ThemeData lightTheme = ThemeData(
-    brightness: Brightness.light,
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
 
-    scaffoldBackgroundColor: Colors.brown.shade100,
+      colorScheme: scheme,
 
-    primaryColor: Colors.brown.shade50,
+      scaffoldBackgroundColor: scheme.surface,
 
-    shadowColor: Colors.brown.shade700,
+      cardColor: scheme.surfaceContainerHighest,
 
-    colorScheme: ColorScheme.light(
-      primary: Colors.brown,
-      secondary: Colors.orange,
+      shadowColor: Colors.black26,
 
-    ),
-
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.brown,
-      foregroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-    ),
-
-    cardTheme: CardThemeData(
-      elevation: 4,
-      color: Colors.brown.shade100,
-    ),
-    textTheme: TextTheme(
-      titleLarge: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+      appBarTheme: AppBarTheme(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+        centerTitle: true,
+        elevation: 0,
       ),
-      titleMedium: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+
+      cardTheme: CardThemeData(
+        elevation: 4,
+        color: scheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
-      titleSmall: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
       ),
-    ),
 
-    floatingActionButtonTheme:
-    FloatingActionButtonThemeData(
-      backgroundColor: Colors.brown,
-    ),
-  );
-
-
-
-  static ThemeData darkTheme = ThemeData(
-    brightness: Brightness.dark,
-
-    scaffoldBackgroundColor: Color(0xff121212),
-
-    primaryColor: Color(0xff1E1E1E),
-
-    shadowColor: Colors.black,
-
-    colorScheme: ColorScheme.dark(
-      primary: Colors.orange,
-      secondary: Colors.orangeAccent,
-    ),
-
-    appBarTheme: AppBarTheme(
-      backgroundColor: Color(0xff1E1E1E),
-      foregroundColor: Colors.white,
-      elevation: 0,
-      centerTitle: true,
-    ),
-
-    cardTheme: CardThemeData(
-      elevation: 4,
-      color: Color(0xff1E1E1E),
-    ),
-    textTheme: TextTheme(
-      titleLarge: TextStyle(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
-      titleMedium: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-      titleSmall: TextStyle(
-        fontSize:16,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-      ),
-    ),
 
-    floatingActionButtonTheme:
-    FloatingActionButtonThemeData(
-      backgroundColor: Colors.orange,
-    ),
-  );
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: scheme.primary,
+          side: BorderSide(color: scheme.primary),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: scheme.surfaceContainerHighest,
+
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.outline),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: scheme.primary,
+            width: 2,
+          ),
+        ),
+      ),
+
+      chipTheme: ChipThemeData(
+        backgroundColor: scheme.surfaceContainerHighest,
+        selectedColor: scheme.primaryContainer,
+        disabledColor: scheme.surfaceContainer,
+        secondarySelectedColor: scheme.primary,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 4,
+        ),
+        labelStyle: TextStyle(
+          color: scheme.onSurface,
+        ),
+        secondaryLabelStyle: TextStyle(
+          color: scheme.onPrimaryContainer,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant,
+        thickness: 1,
+      ),
+
+      textTheme: Typography.blackMountainView.apply(
+        bodyColor: scheme.onSurface,
+        displayColor: scheme.onSurface,
+      ),
+    );
+  }
+
+  static ThemeData darkTheme(Color seedColor) {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: Brightness.dark,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+
+      colorScheme: scheme,
+
+      scaffoldBackgroundColor: scheme.surface,
+
+      cardColor: scheme.surfaceContainerHighest,
+
+      shadowColor: Colors.black54,
+
+      appBarTheme: AppBarTheme(
+        backgroundColor: scheme.surfaceContainerHighest,
+        foregroundColor: scheme.onSurface,
+        centerTitle: true,
+        elevation: 0,
+      ),
+
+      cardTheme: CardThemeData(
+        elevation: 4,
+        color: scheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: scheme.primary,
+        foregroundColor: scheme.onPrimary,
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: scheme.primary,
+          foregroundColor: scheme.onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: scheme.primary,
+          side: BorderSide(color: scheme.primary),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: scheme.surfaceContainerHighest,
+
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: scheme.outline),
+        ),
+
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: scheme.primary,
+            width: 2,
+          ),
+        ),
+      ),
+
+      chipTheme: ChipThemeData(
+        backgroundColor: scheme.surfaceContainerHighest,
+        selectedColor: scheme.primaryContainer,
+        disabledColor: scheme.surfaceContainer,
+        secondarySelectedColor: scheme.primary,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 4,
+        ),
+        labelStyle: TextStyle(
+          color: scheme.onSurface,
+        ),
+        secondaryLabelStyle: TextStyle(
+          color: scheme.onPrimaryContainer,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant,
+        thickness: 1,
+      ),
+
+      textTheme: Typography.whiteMountainView.apply(
+        bodyColor: scheme.onSurface,
+        displayColor: scheme.onSurface,
+      ),
+    );
+  }
 }

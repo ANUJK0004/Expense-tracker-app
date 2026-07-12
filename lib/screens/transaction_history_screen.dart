@@ -1,6 +1,5 @@
 import 'package:exes/models/expense.dart';
 import 'package:exes/services/settings_controller.dart';
-import 'package:exes/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -46,19 +45,16 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
               .where((transaction) => transaction.category == selectedCategory)
               .toList();
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text("Transactions History"),
         actions: [
           IconButton(
             onPressed: () {},
             icon: Icon(Icons.search_outlined),
-            color: Colors.brown,
           ),
           IconButton(
             onPressed: () {},
             icon: Icon(Icons.filter_alt_outlined),
-            color: Colors.brown,
           ),
         ],
         centerTitle: true,
@@ -71,9 +67,9 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("📭",style: textStyle,),
-                  Text("No transactions found",style: textStyle,),
-                  Text("Add some transactions to see them here",style: textStyle,),
+                  Text("📭",),
+                  Text("No transactions found",),
+                  Text("Add some transactions to see them here", ),
                 ],
               )
             : Column(
@@ -89,9 +85,6 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                           child: ChoiceChip(
                             label: Text(categories[index]),
                             elevation: 2,
-                            side: BorderSide(color: Theme.of(context).shadowColor),
-                            backgroundColor: Theme.of(context).primaryColor,
-                            selectedColor: Theme.of(context).shadowColor,
                             selected: selectedCategory == categories[index],
                             onSelected: (value) {
                               setState(() {
@@ -103,11 +96,11 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                       },
                     ),
                   ),
-                  Divider(color: Theme.of(context).shadowColor),
+                  Divider(),
                   Expanded(
                     child: ListView.separated(
                       separatorBuilder: (context, index) =>
-                          Divider(color: Theme.of(context).shadowColor),
+                          Divider(),
                       physics: BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       itemCount: filteredTransactions.length,
@@ -133,10 +126,9 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                                   backgroundColor: Colors.transparent,
                                   child: Text(
                                     transaction.category.split(" ").first,
-                                    style: textStyle,
                                   ),
                                 ),
-                                title: Text(transaction.category.split(" ").last,style: textStyle,),
+                                title: Text(transaction.category.split(" ").last,),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -144,13 +136,11 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                                       transaction.note.isEmpty
                                           ? "No note"
                                           : transaction.note,
-                                      style: textStyle,
                                     ),
                                     Text(
                                       DateFormat(
                                         settings.dateFormat,
                                       ).format(transaction.date),
-                                      style: textStyle,
                                     ),
                                   ],
                                 ),

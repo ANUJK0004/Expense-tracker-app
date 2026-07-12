@@ -88,8 +88,9 @@ class ImportExportService {
 
     }
 
-    final csv =
-    const ListToCsvConverter().convert(rows);
+    final csv = rows
+        .map((row) => row.map((e) => '"$e"').join(','))
+        .join('\n');
 
     final directory =
     await getApplicationDocumentsDirectory();

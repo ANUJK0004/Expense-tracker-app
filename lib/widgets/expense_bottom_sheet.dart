@@ -70,7 +70,6 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
         height: MediaQuery.of(context).size.height * 0.75,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(23),
             topRight: Radius.circular(23),
@@ -87,7 +86,6 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                   width: 50,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).floatingActionButtonTheme.backgroundColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
@@ -211,7 +209,6 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: Colors.blue.shade200,
                           width: 2,
                         ),
                         gapPadding: 10,
@@ -246,7 +243,6 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
-                          color: Colors.blue.shade200,
                           width: 2,
                         ),
                         gapPadding: 10,
@@ -269,9 +265,8 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                   width: MediaQuery.of(context).size.width / 1.2,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.blue.shade200, width: 1),
+                    border: Border.all( width: 1),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -279,7 +274,6 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       IconButton(
                         icon: Icon(
                           Icons.calendar_month,
-                          color: Colors.blue.shade200,
                         ),
                         onPressed: () async {
                           final DateTime? pickedDate = await showDatePicker(

@@ -12,10 +12,8 @@ class RecentTransactions extends StatelessWidget {
         height: MediaQuery.of(context).size.height / 3,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).shadowColor,
               blurRadius: 5,
             ),
           ],
@@ -39,10 +37,6 @@ class RecentTransactions extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Text(
                 "Recent Transactions",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w500,
-                ),
               ),
             ),
             Expanded(

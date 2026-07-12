@@ -1,4 +1,8 @@
+import 'package:exes/screens/privacy_policy_screen.dart';
+import 'package:exes/services/rate_service.dart';
+import 'package:exes/services/report_bug_service.dart';
 import 'package:exes/services/settings_controller.dart';
+import 'package:exes/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../theme/theme_controller.dart';
@@ -257,6 +261,59 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  Future<void> showAccentDialog(BuildContext context) async {
+
+    final controller =
+    context.read<ThemeController>();
+
+    showDialog(
+
+      context: context,
+
+      builder: (_) {
+
+        return AlertDialog(
+
+          title: const Text("Accent Color"),
+
+          content: Wrap(
+
+            spacing: 10,
+
+            children:
+
+            AppColors.colors.map((color) {
+
+              return GestureDetector(
+
+                onTap: () {
+
+                  controller.changeAccent(color);
+
+                  Navigator.pop(context);
+
+                },
+
+                child: CircleAvatar(
+
+                  backgroundColor: color,
+
+                ),
+
+              );
+
+            }).toList(),
+
+          ),
+
+        );
+
+      },
+
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = context.watch<ThemeController>();
@@ -286,12 +343,27 @@ class SettingsScreen extends StatelessWidget {
                 ),
 
                 ListTile(
+
                   leading: const Icon(Icons.palette),
+
                   title: const Text("Accent Color"),
-                  subtitle: const Text("Brown"),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {},
-                ),
+
+                  trailing: CircleAvatar(
+
+                    radius: 12,
+
+                    backgroundColor:
+                    context.watch<ThemeController>().seedColor,
+
+                  ),
+
+                  onTap: () {
+
+                    showAccentDialog(context);
+
+                  },
+
+                )
               ],
             ),
           ),
@@ -410,18 +482,23 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.bar_chart),
 
-                  title: const Text("Default Analytics Filter"),
+                  title: const Text(
+                    "Default Analytics Filter",
+                  ),
 
                   subtitle: Consumer<SettingsController>(
-                    builder: (_, controller, _) {
-                      return Text(controller.analyticsFilter);
+                    builder: (_, controller, __) {
+                      return Text(
+                        controller.analyticsFilter,
+                      );
                     },
                   ),
 
                   onTap: () {
                     showAnalyticsDialog(context);
                   },
-                ),
+                )
+
               ],
             ),
           ),
@@ -440,21 +517,56 @@ class SettingsScreen extends StatelessWidget {
                 ),
 
                 ListTile(
+
                   leading: const Icon(Icons.star),
+
                   title: const Text("Rate App"),
-                  onTap: () {},
+
+                  onTap: () {
+
+                    RateService.rateApp();
+
+                  },
+
                 ),
 
                 ListTile(
+
                   leading: const Icon(Icons.bug_report),
+
                   title: const Text("Report Bug"),
-                  onTap: () {},
+
+                  onTap: () {
+
+                    ReportBugService.reportBug();
+
+                  },
+
                 ),
 
                 ListTile(
+
                   leading: const Icon(Icons.privacy_tip),
+
                   title: const Text("Privacy Policy"),
-                  onTap: () {},
+
+                  onTap: () {
+
+                    Navigator.push(
+
+                      context,
+
+                      MaterialPageRoute(
+
+                        builder: (_) =>
+                        const PrivacyPolicyScreen(),
+
+                      ),
+
+                    );
+
+                  },
+
                 ),
 
                 const Divider(),

@@ -6,6 +6,10 @@ class ThemeController extends ChangeNotifier{
 
   bool get isDarkMode => _isDarkMode;
 
+  Color _seedColor = Colors.brown;
+
+  Color get seedColor => _seedColor;
+
   ThemeMode get themeMode => _isDarkMode?ThemeMode.dark:ThemeMode.light;
 
   Future<void> loadTheme() async {
@@ -18,6 +22,11 @@ class ThemeController extends ChangeNotifier{
     _isDarkMode = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool("darkMode", value);
+    notifyListeners();
+  }
+
+  Future<void> changeAccent(Color color) async {
+    _seedColor = color;
     notifyListeners();
   }
 }
