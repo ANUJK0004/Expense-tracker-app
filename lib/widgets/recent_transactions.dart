@@ -12,7 +12,13 @@ class RecentTransactions extends StatelessWidget {
         height: MediaQuery.of(context).size.height / 3,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          color: Colors.brown.shade50,
+          color: Theme.of(context).primaryColor,
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).shadowColor,
+              blurRadius: 5,
+            ),
+          ],
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(28),
             topLeft: Radius.circular(28),
@@ -48,7 +54,7 @@ class RecentTransactions extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return ListTile(
                     leading: Icon(Icons.compare_arrows_sharp,color: transactions[index].type=="Expense"?Colors.red:Colors.green,size: 36,),
-                    title: Text(transactions[index].category),
+                    title: Text(transactions[index].category,),
                     subtitle: Text(transactions[index].note),
                     trailing: Text(transactions[index].amount.toString()),
                     // minTileHeight: 200,

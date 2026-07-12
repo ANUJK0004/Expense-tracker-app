@@ -1,6 +1,8 @@
 import 'package:exes/models/expense.dart';
+import 'package:exes/services/settings_controller.dart';
 import 'package:exes/utils/text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class IntroCard extends StatelessWidget {
   const IntroCard({super.key,required this.transactions});
@@ -24,22 +26,24 @@ class IntroCard extends StatelessWidget {
     return map;
   }
 
-
   @override
   Widget build(BuildContext context) {
+    final currency = context.watch<SettingsController>().currency;
+
     return Container(
       height: MediaQuery.of(context).size.height / 3,
       width: MediaQuery.of(context).size.width,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.brown.shade500,
-            Colors.brown.shade200,
-            Colors.brown.shade300,
-            Colors.brown.shade200,
-            Colors.brown.shade500,
-          ],
-        ),
+        color: Theme.of(context).primaryColor,
+        // gradient: LinearGradient(
+        //   colors: [
+        //     Colors.brown.shade500,
+        //     Colors.brown.shade200,
+        //     Colors.brown.shade300,
+        //     Colors.brown.shade200,
+        //     Colors.brown.shade500,
+        //   ],
+        // ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -52,7 +56,7 @@ class IntroCard extends StatelessWidget {
               children: [
                 Text("Good Morning 👋", style: textStyle),
                 Text("Current Balance", style: textStyle),
-                Text("₹${currentBalance()['balance']?.toStringAsFixed(2)}", style: textStyle),
+                Text("$currency${currentBalance()['balance']?.toStringAsFixed(2)}", style: textStyle),
               ],
             ),
           ),
@@ -64,13 +68,13 @@ class IntroCard extends StatelessWidget {
                 Column(
                   children: [
                     Text("Income", style: textStyle),
-                    Text("₹${currentBalance()['income']?.toStringAsFixed(2)}", style: textStyle),
+                    Text("$currency${currentBalance()['income']?.toStringAsFixed(2)}", style: textStyle),
                   ],
                 ),
                 Column(
                   children: [
                     Text("Expenses", style: textStyle),
-                    Text("₹${currentBalance()['expense']?.toStringAsFixed(2)}", style: textStyle),
+                    Text("$currency${currentBalance()['expense']?.toStringAsFixed(2)}", style: textStyle),
                   ],
                 ),
               ],

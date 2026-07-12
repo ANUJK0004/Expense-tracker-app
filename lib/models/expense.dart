@@ -30,7 +30,7 @@ class ExpenseTransaction {
   factory ExpenseTransaction.fromMap(Map<String,dynamic> map){
     return ExpenseTransaction(
       id: map['id'],
-      amount: map['amount'],
+      amount: map['amount'].toDouble(),
       category: map['category'],
       note: map['note'],
       type: map['type'],

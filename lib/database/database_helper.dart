@@ -70,8 +70,24 @@ class DatabaseHelper {
     final db = await database;
     await db.delete(table, where: "id = ?", whereArgs: [id]);
   }
-  Future<void> clearTransactions() async {
+  Future<void> clearAllTransactions() async {
     final db = await database;
     await db.delete(table);
+  }
+
+  Future<void> insertTransactions(List<ExpenseTransaction> transactions) async {
+    final db = await database;
+
+    final batch = db.batch();
+
+    for (final transaction in transactions) {
+      batch.insert(
+        table,
+        transaction.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(noResult: true);
   }
 }

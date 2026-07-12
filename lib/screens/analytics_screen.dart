@@ -1,6 +1,9 @@
 import 'package:exes/models/expense.dart';
+import 'package:exes/services/settings_controller.dart';
+import 'package:exes/utils/text_styles.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key, required this.transactions});
@@ -13,7 +16,7 @@ class AnalyticsScreen extends StatefulWidget {
 enum TimePeriod { daily, weekly, monthly, yearly }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
-  TimePeriod selectedTimePeriod = TimePeriod.daily;
+  late TimePeriod selectedTimePeriod;
 
   List<ExpenseTransaction> get filteredTransactions {
     final now = DateTime.now();
@@ -148,11 +151,43 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    final filter = context.read<SettingsController>().analyticsFilter;
+
+    switch (filter) {
+      case "Daily":
+        selectedTimePeriod = TimePeriod.daily;
+
+        break;
+
+      case "Weekly":
+        selectedTimePeriod = TimePeriod.weekly;
+
+        break;
+
+      case "Monthly":
+        selectedTimePeriod = TimePeriod.monthly;
+
+        break;
+
+      case "Yearly":
+        selectedTimePeriod = TimePeriod.yearly;
+
+        break;
+
+      default:
+        selectedTimePeriod = TimePeriod.monthly;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final balance = currentBalance();
     return Scaffold(
-      backgroundColor: Colors.brown.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text("Analytics"), centerTitle: true),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -161,10 +196,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
             padding: const EdgeInsets.all(8.0),
             child: SegmentedButton<TimePeriod>(
               style: SegmentedButton.styleFrom(
-                backgroundColor: Colors.brown.shade500,
-                selectedBackgroundColor: Colors.brown.shade200,
-                foregroundColor: Colors.brown.shade200,
-                selectedForegroundColor: Colors.brown.shade500,
+                backgroundColor: Theme.of(context).primaryColor,
+                selectedBackgroundColor: Theme.of(context).shadowColor,
+                foregroundColor: Theme.of(context).shadowColor,
+                selectedForegroundColor: Theme.of(context).primaryColor,
               ),
               selected: <TimePeriod>{selectedTimePeriod},
               onSelectionChanged: (Set<TimePeriod> newSelection) {
@@ -187,18 +222,21 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
           filteredTransactions.isEmpty
               ? Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("📊"),
-                    Text("No analytics yet"),
-                    Text("Add your first transaction to see charts"),
-                  ],
-                ),
-              )
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("📊", style: textStyle),
+                      Text("No analytics yet", style: textStyle),
+                      Text(
+                        "Add your first transaction to see charts",
+                        style: textStyle,
+                      ),
+                    ],
+                  ),
+                )
               : Expanded(
-                child: Column(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -212,9 +250,18 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(summaryTitle),
-                                Text("Expense : ${balance['expense']}"),
-                                Text("Income : ${balance['income']}"),
-                                Text("Saving : ${balance['balance']}"),
+                                Text(
+                                  "Expense : ${balance['expense']}",
+                                  style: textStyle,
+                                ),
+                                Text(
+                                  "Income : ${balance['income']}",
+                                  style: textStyle,
+                                ),
+                                Text(
+                                  "Saving : ${balance['balance']}",
+                                  style: textStyle,
+                                ),
                               ],
                             ),
                           ),
@@ -231,11 +278,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 margin: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: Colors.brown.shade50,
+                                  color: Theme.of(context).primaryColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).shadowColor,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
                                 ),
                                 child: Column(
                                   children: [
-                                    Text("Income vs Expense"),
+                                    Text("Income vs Expense", style: textStyle),
                                     Expanded(
                                       child: Padding(
                                         padding: EdgeInsets.all(20),
@@ -243,7 +296,9 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                           BarChartData(
                                             alignment:
                                                 BarChartAlignment.spaceAround,
-                                            borderData: FlBorderData(show: false),
+                                            borderData: FlBorderData(
+                                              show: false,
+                                            ),
                                             gridData: FlGridData(show: true),
                                             titlesData: FlTitlesData(
                                               topTitles: AxisTitles(
@@ -316,11 +371,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 margin: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: Colors.brown.shade50,
+                                  color: Theme.of(context).primaryColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).shadowColor,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
                                 ),
                                 child: Column(
                                   children: [
-                                    Text("Expense Distribution"),
+                                    Text(
+                                      "Expense Distribution",
+                                      style: textStyle,
+                                    ),
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
@@ -342,18 +406,29 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                 margin: EdgeInsets.all(20),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
-                                  color: Colors.brown.shade50,
+                                  color: Theme.of(context).primaryColor,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Theme.of(context).shadowColor,
+                                      blurRadius: 5,
+                                    ),
+                                  ],
                                 ),
                                 child: Column(
                                   children: [
-                                    Text("Daily Spending Trend"),
+                                    Text(
+                                      "Daily Spending Trend",
+                                      style: textStyle,
+                                    ),
                                     Expanded(
                                       child: Padding(
                                         padding: const EdgeInsets.all(8.0),
                                         child: LineChart(
                                           LineChartData(
                                             gridData: FlGridData(show: true),
-                                            borderData: FlBorderData(show: true),
+                                            borderData: FlBorderData(
+                                              show: true,
+                                            ),
                                             titlesData: FlTitlesData(
                                               leftTitles: AxisTitles(
                                                 sideTitles: SideTitles(
@@ -379,8 +454,10 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                                         dailyTotals.entries
                                                             .toList()
                                                           ..sort(
-                                                            (a, b) => a.key
-                                                                .compareTo(b.key),
+                                                            (a, b) =>
+                                                                a.key.compareTo(
+                                                                  b.key,
+                                                                ),
                                                           );
 
                                                     if (value.toInt() >=
@@ -402,14 +479,15 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                               LineChartBarData(
                                                 spots: getLineSpots(),
                                                 isCurved: true,
-                                                color: Colors.brown,
+                                                color: Theme.of(
+                                                  context,
+                                                ).colorScheme.primary,
                                                 barWidth: 4,
                                                 dotData: FlDotData(show: true),
                                                 belowBarData: BarAreaData(
                                                   show: true,
-                                                  color: Colors.brown.withOpacity(
-                                                    0.2,
-                                                  ),
+                                                  color: Colors.brown
+                                                      .withOpacity(0.2),
                                                 ),
                                                 isStrokeCapRound: true,
                                                 preventCurveOverShooting: true,
@@ -428,7 +506,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       ),
                     ],
                   ),
-              ),
+                ),
         ],
       ),
     );

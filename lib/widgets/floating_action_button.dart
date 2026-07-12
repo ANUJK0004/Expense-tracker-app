@@ -9,8 +9,12 @@ class AddExpenseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: onPressed,
-      backgroundColor: Colors.brown,
-      foregroundColor: Colors.brown.shade50,
+      backgroundColor: Theme.of(context)
+          .floatingActionButtonTheme
+          .backgroundColor,
+      foregroundColor: Theme.of(context)
+          .floatingActionButtonTheme
+          .foregroundColor,
       elevation: 3,
       shape: CircleBorder(),
       child: Icon(Icons.add_sharp,size: 44,),

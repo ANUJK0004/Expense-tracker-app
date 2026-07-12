@@ -1,6 +1,9 @@
 import 'package:exes/models/expense.dart';
+import 'package:exes/services/settings_controller.dart';
+import 'package:exes/utils/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class TransactionsHistory extends StatefulWidget {
   const TransactionsHistory({
@@ -36,13 +39,14 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsController>();
     final filteredTransactions = selectedCategory == "All"
         ? widget.transactions
         : widget.transactions
               .where((transaction) => transaction.category == selectedCategory)
               .toList();
     return Scaffold(
-      backgroundColor: Colors.brown.shade100,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text("Transactions History"),
         actions: [
@@ -67,9 +71,9 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("📭"),
-                  Text("No transactions found"),
-                  Text("Add some transactions to see them here"),
+                  Text("📭",style: textStyle,),
+                  Text("No transactions found",style: textStyle,),
+                  Text("Add some transactions to see them here",style: textStyle,),
                 ],
               )
             : Column(
@@ -85,11 +89,9 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                           child: ChoiceChip(
                             label: Text(categories[index]),
                             elevation: 2,
-                            side: BorderSide(color: Colors.brown.shade900),
-                            backgroundColor: Colors.brown.shade500.withOpacity(
-                              0.18,
-                            ),
-                            selectedColor: Colors.brown.shade200,
+                            side: BorderSide(color: Theme.of(context).shadowColor),
+                            backgroundColor: Theme.of(context).primaryColor,
+                            selectedColor: Theme.of(context).shadowColor,
                             selected: selectedCategory == categories[index],
                             onSelected: (value) {
                               setState(() {
@@ -101,11 +103,11 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                       },
                     ),
                   ),
-                  Divider(color: Colors.brown),
+                  Divider(color: Theme.of(context).shadowColor),
                   Expanded(
                     child: ListView.separated(
                       separatorBuilder: (context, index) =>
-                          Divider(color: Colors.brown),
+                          Divider(color: Theme.of(context).shadowColor),
                       physics: BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       itemCount: filteredTransactions.length,
@@ -131,10 +133,10 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                                   backgroundColor: Colors.transparent,
                                   child: Text(
                                     transaction.category.split(" ").first,
-                                    style: TextStyle(fontSize: 28),
+                                    style: textStyle,
                                   ),
                                 ),
-                                title: Text(transaction.category.split(" ").last),
+                                title: Text(transaction.category.split(" ").last,style: textStyle,),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -142,11 +144,13 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
                                       transaction.note.isEmpty
                                           ? "No note"
                                           : transaction.note,
+                                      style: textStyle,
                                     ),
                                     Text(
-                                      DateFormat.yMMMMd()
-                                          .format(transaction.date)
-                                          .toString(),
+                                      DateFormat(
+                                        settings.dateFormat,
+                                      ).format(transaction.date),
+                                      style: textStyle,
                                     ),
                                   ],
                                 ),
