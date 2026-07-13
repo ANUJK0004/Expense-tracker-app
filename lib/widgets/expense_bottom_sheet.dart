@@ -70,9 +70,10 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
         height: MediaQuery.of(context).size.height * 0.75,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(23),
-            topRight: Radius.circular(23),
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
         ),
         child: SingleChildScrollView(
@@ -81,52 +82,43 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
             key: _formKey,
             child: Column(
               children: [
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 Container(
-                  width: 50,
+                  width: 55,
                   height: 5,
                   decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  "Add Transaction",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade900,
-                  ),
+                  widget.transaction == null
+                      ? "Add Transaction"
+                      : "Edit Transaction",
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ChoiceChip(
+                      label: const Text("Expense"),
                       selected: selectedType == "Expense",
-                      selectedColor: Colors.red.shade700,
-                      onSelected: (value) {
+                      onSelected: (_) {
                         setState(() {
                           selectedType = "Expense";
                         });
                       },
-                      label: Text("Expense"),
-                      elevation: 2,
-                      side: BorderSide(color: Colors.red.shade900),
-                      backgroundColor: Colors.red.shade900.withOpacity(0.18),
                     ),
                     ChoiceChip(
+                      label: const Text("Income"),
                       selected: selectedType == "Income",
-                      selectedColor: Colors.green.shade700,
-                      onSelected: (value) {
+                      onSelected: (_) {
                         setState(() {
                           selectedType = "Income";
                         });
                       },
-                      label: Text("Income"),
-                      elevation: 2,
-                      side: BorderSide(color: Colors.green.shade900),
-                      backgroundColor: Colors.green.shade900.withOpacity(0.18),
                     ),
                   ],
                 ),
@@ -160,30 +152,10 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                     decoration: InputDecoration(
                       hintText: "Amount",
                       labelText: "Amount",
-                      hintFadeDuration: Duration(seconds: 1),
-                      // errorText: "Enter a valid amount",
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.blue.shade200,
-                          width: 2,
-                        ),
-                        gapPadding: 10,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey,
-                          width: 1,
-                          style: BorderStyle.solid,
-                          strokeAlign: 1,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        gapPadding: 10,
-                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: DropdownButtonFormField(
@@ -200,7 +172,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                         selectedCategory = value!;
                       });
                     },
-                    dropdownColor: Colors.white,
+                    dropdownColor: Theme.of(context).cardColor,
                     decoration: InputDecoration(
                       hintText: "Category",
                       labelText: "Category",
@@ -208,9 +180,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       labelStyle: TextStyle(color: Colors.grey),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          width: 2,
-                        ),
+                        borderSide: BorderSide(width: 2),
                         gapPadding: 10,
                       ),
                       enabledBorder: OutlineInputBorder(
@@ -225,7 +195,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                     // alignment : AlignmentDirectional.centerStart,
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: TextFormField(
@@ -242,9 +212,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       hintFadeDuration: Duration(seconds: 1),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          width: 2,
-                        ),
+                        borderSide: BorderSide(width: 2),
                         gapPadding: 10,
                       ),
                       enabledBorder: OutlineInputBorder(
@@ -260,13 +228,16 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 Container(
                   width: MediaQuery.of(context).size.width / 1.2,
                   height: 50,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all( width: 1),
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outline,
+                    ),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -274,6 +245,7 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                       IconButton(
                         icon: Icon(
                           Icons.calendar_month,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         onPressed: () async {
                           final DateTime? pickedDate = await showDatePicker(
@@ -281,6 +253,12 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                             initialDate: selectedDate ?? DateTime.now(),
                             firstDate: DateTime(2024),
                             lastDate: DateTime.now(),
+                            builder: (context, child) {
+                              return Theme(
+                                data: Theme.of(context),
+                                child: child!,
+                              );
+                            },
                           );
                           if (pickedDate != null) {
                             setState(() {
@@ -290,13 +268,13 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                         },
                       ),
                       Text(
-                        DateFormat(
-                          settings.dateFormat,
-                        ).format(selectedDate!),                      ),
+                        DateFormat(settings.dateFormat).format(selectedDate!),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -326,7 +304,9 @@ class _ExpenseBottomSheetState extends State<ExpenseBottomSheet> {
                         if (!context.mounted) return;
                         Navigator.of(context).pop(true);
                       },
-                      child: Text("Save"),
+                      child: Text(
+                        widget.transaction == null ? "Add" : "Update",
+                      ),
                     ),
                   ],
                 ),

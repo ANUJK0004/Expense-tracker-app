@@ -24,11 +24,13 @@ import 'package:exes/services/import_export_service.dart';
     final importExport = ImportExportService.instance;
 
     Future<void> loadTransactions() async {
-      transactions = await DatabaseHelper.instance.getAllTransactions();
+      final data =
+      await DatabaseHelper.instance.getAllTransactions();
+
       if (!mounted) return;
 
       setState(() {
-        transactions = transactions;
+        transactions = data;
       });
     }
 
@@ -36,6 +38,9 @@ import 'package:exes/services/import_export_service.dart';
       final added = await showModalBottomSheet<bool>(
         context: context,
         isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        backgroundColor: Colors.transparent,
         builder: (_) => ExpenseBottomSheet(onAdd: insertTransaction),
       );
 
@@ -92,41 +97,44 @@ import 'package:exes/services/import_export_service.dart';
     @override
     void initState() {
       super.initState();
-      loadTransactions();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        loadTransactions();
+      });
     }
 
     @override
     Widget build(BuildContext context) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        bottomNavigationBar: ScreensNavigationBar(
-          changedIndex: (index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          currentIndex: currentIndex,
+      return SafeArea(
+        child: Scaffold(
+          bottomNavigationBar: ScreensNavigationBar(
+            changedIndex: (index) {
+              setState(() {
+                currentIndex = index;
+              });
+            },
+            currentIndex: currentIndex,
+          ),
+          body: IndexedStack(
+            index: currentIndex,
+            children: [
+              HomeScreen(transactions: transactions),
+              AnalyticsScreen(transactions: transactions),
+              TransactionsHistory(
+                transactions: transactions,
+                onDelete: deleteTransaction,
+                onTap : editTransaction,
+              ),
+              SettingsScreen(
+                onClearAll: clearAllTransactions,
+                onExportCSV: exportCSV,
+                onExportJson: exportJson,
+                onImportJson: importJson,
+              ),
+            ],
+          ),
+          floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openBottomSheet) : null,
+          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
         ),
-        body: IndexedStack(
-          index: currentIndex,
-          children: [
-            HomeScreen(transactions: transactions),
-            AnalyticsScreen(transactions: transactions),
-            TransactionsHistory(
-              transactions: transactions,
-              onDelete: deleteTransaction,
-              onTap : editTransaction,
-            ),
-            SettingsScreen(
-              onClearAll: clearAllTransactions,
-              onExportCSV: exportCSV,
-              onExportJson: exportJson,
-              onImportJson: importJson,
-            ),
-          ],
-        ),
-        floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openBottomSheet) : null,
-        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       );
     }
   }

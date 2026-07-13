@@ -26,12 +26,20 @@ class AppTheme {
         elevation: 0,
       ),
 
+      iconTheme: IconThemeData(color: scheme.primary),
+
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? scheme.primary
+              : scheme.outline,
+        ),
+      ),
+
       cardTheme: CardThemeData(
         elevation: 4,
         color: scheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -63,9 +71,7 @@ class AppTheme {
         filled: true,
         fillColor: scheme.surfaceContainerHighest,
 
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -74,11 +80,14 @@ class AppTheme {
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: scheme.primary,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
+      ),
+
+      listTileTheme: ListTileThemeData(
+        iconColor: scheme.primary,
+        textColor: scheme.onSurface,
+        tileColor: Colors.transparent,
       ),
 
       chipTheme: ChipThemeData(
@@ -86,19 +95,10 @@ class AppTheme {
         selectedColor: scheme.primaryContainer,
         disabledColor: scheme.surfaceContainer,
         secondarySelectedColor: scheme.primary,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 4,
-        ),
-        labelStyle: TextStyle(
-          color: scheme.onSurface,
-        ),
-        secondaryLabelStyle: TextStyle(
-          color: scheme.onPrimaryContainer,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        labelStyle: TextStyle(color: scheme.onSurface),
+        secondaryLabelStyle: TextStyle(color: scheme.onPrimaryContainer),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
       dividerTheme: DividerThemeData(
@@ -109,6 +109,56 @@ class AppTheme {
       textTheme: Typography.blackMountainView.apply(
         bodyColor: scheme.onSurface,
         displayColor: scheme.onSurface,
+      ),
+
+      dialogTheme: DialogThemeData(
+        backgroundColor: scheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: scheme.primary,
+        contentTextStyle: TextStyle(color: scheme.onPrimary),
+      ),
+
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surface,
+        modalBackgroundColor: scheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+      ),
+
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStatePropertyAll(scheme.primary),
+      ),
+
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 4,
+
+        backgroundColor: scheme.surface,
+
+        indicatorColor: scheme.primaryContainer,
+
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: scheme.onPrimaryContainer);
+          }
+
+          return IconThemeData(color: scheme.onSurfaceVariant);
+        }),
+
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          return TextStyle(
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.bold
+                : FontWeight.normal,
+            color: states.contains(WidgetState.selected)
+                ? scheme.onPrimaryContainer
+                : scheme.onSurfaceVariant,
+          );
+        }),
       ),
     );
   }
@@ -138,12 +188,20 @@ class AppTheme {
         elevation: 0,
       ),
 
+      iconTheme: IconThemeData(color: scheme.primary),
+
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (states) => states.contains(WidgetState.selected)
+              ? scheme.primary
+              : scheme.outline,
+        ),
+      ),
+
       cardTheme: CardThemeData(
         elevation: 4,
         color: scheme.surfaceContainerHighest,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -175,9 +233,7 @@ class AppTheme {
         filled: true,
         fillColor: scheme.surfaceContainerHighest,
 
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -186,11 +242,14 @@ class AppTheme {
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: scheme.primary,
-            width: 2,
-          ),
+          borderSide: BorderSide(color: scheme.primary, width: 2),
         ),
+      ),
+
+      listTileTheme: ListTileThemeData(
+        iconColor: scheme.primary,
+        textColor: scheme.onSurface,
+        tileColor: Colors.transparent,
       ),
 
       chipTheme: ChipThemeData(
@@ -198,19 +257,10 @@ class AppTheme {
         selectedColor: scheme.primaryContainer,
         disabledColor: scheme.surfaceContainer,
         secondarySelectedColor: scheme.primary,
-        padding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 4,
-        ),
-        labelStyle: TextStyle(
-          color: scheme.onSurface,
-        ),
-        secondaryLabelStyle: TextStyle(
-          color: scheme.onPrimaryContainer,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        labelStyle: TextStyle(color: scheme.onSurface),
+        secondaryLabelStyle: TextStyle(color: scheme.onPrimaryContainer),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
       dividerTheme: DividerThemeData(
@@ -221,6 +271,56 @@ class AppTheme {
       textTheme: Typography.whiteMountainView.apply(
         bodyColor: scheme.onSurface,
         displayColor: scheme.onSurface,
+      ),
+
+      dialogTheme: DialogThemeData(
+        backgroundColor: scheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      ),
+
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: scheme.primary,
+        contentTextStyle: TextStyle(color: scheme.onPrimary),
+      ),
+
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surface,
+        modalBackgroundColor: scheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+      ),
+
+      checkboxTheme: CheckboxThemeData(
+        fillColor: WidgetStatePropertyAll(scheme.primary),
+      ),
+
+      navigationBarTheme: NavigationBarThemeData(
+        elevation: 4,
+
+        backgroundColor: scheme.surface,
+
+        indicatorColor: scheme.primaryContainer,
+
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: scheme.onPrimaryContainer);
+          }
+
+          return IconThemeData(color: scheme.onSurfaceVariant);
+        }),
+
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          return TextStyle(
+            fontWeight: states.contains(WidgetState.selected)
+                ? FontWeight.bold
+                : FontWeight.normal,
+            color: states.contains(WidgetState.selected)
+                ? scheme.onPrimaryContainer
+                : scheme.onSurfaceVariant,
+          );
+        }),
       ),
     );
   }

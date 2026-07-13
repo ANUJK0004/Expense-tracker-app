@@ -106,6 +106,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
       "Other": Colors.amber,
     };
 
+    // ignore: unused_local_variable
     int index = 0;
 
     return categoryTotals.entries.map((entry) {
@@ -186,13 +187,27 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     final size = MediaQuery.of(context).size;
     final balance = currentBalance();
     return Scaffold(
-      appBar: AppBar(title: Text("Analytics"), ),
+      appBar: AppBar(title: Text("Analytics")),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: SegmentedButton<TimePeriod>(
+              style: ButtonStyle(
+                backgroundColor:
+                WidgetStateProperty.resolveWith((states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return Theme.of(context)
+                        .colorScheme
+                        .primaryContainer;
+                  }
+
+                  return Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest;
+                }),
+              ),
               selected: <TimePeriod>{selectedTimePeriod},
               onSelectionChanged: (Set<TimePeriod> newSelection) {
                 setState(() {
@@ -214,255 +229,325 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
           filteredTransactions.isEmpty
               ? Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text("📊",),
-                      Text("No analytics yet",),
-                      Text(
-                        "Add your first transaction to see charts",
-                      ),
-                    ],
-                  ),
-                )
+            child: Card(
+              margin: const EdgeInsets.all(24),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+
+                    Icon(
+                      Icons.analytics_outlined,
+                      size: 70,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+
+                    SizedBox(height:20),
+
+                    Text(
+                      "No analytics yet",
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+
+                    SizedBox(height:8),
+
+                    Text(
+                      "Add your first transaction to see charts",
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
               : Expanded(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     // crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(summaryTitle),
-                                Text(
-                                  "Expense : ${balance['expense']}",
-                                ),
-                                Text(
-                                  "Income : ${balance['income']}",
-                                ),
-                                Text(
-                                  "Saving : ${balance['balance']}",
-                                ),
-                              ],
-                            ),
+                      Card(
+                        margin: const EdgeInsets.all(16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                summaryTitle,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              Text(
+                                "Expense : ${balance['expense']}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+
+                              Text(
+                                "Income : ${balance['income']}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+
+                              Text(
+                                "Saving : ${balance['balance']}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                       Expanded(
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
                           child: Column(
                             children: [
-                              Container(
-                                height: size.width,
-                                width: size.width,
-                                margin: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text("Income vs Expense",),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(20),
-                                        child: BarChart(
-                                          BarChartData(
-                                            alignment:
-                                                BarChartAlignment.spaceAround,
-                                            borderData: FlBorderData(
-                                              show: false,
-                                            ),
-                                            gridData: FlGridData(show: true),
-                                            titlesData: FlTitlesData(
-                                              topTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              rightTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
-                                                ),
-                                              ),
-                                              leftTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: true,
-                                                ),
-                                              ),
-                                              bottomTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: true,
-                                                  getTitlesWidget: (value, meta) {
-                                                    switch (value.toInt()) {
-                                                      case 0:
-                                                        return const Text(
-                                                          "Expense",
-                                                        );
-                                                      case 1:
-                                                        return const Text(
-                                                          "Income",
-                                                        );
-                                                      default:
-                                                        return const SizedBox();
-                                                    }
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                            barGroups: [
-                                              BarChartGroupData(
-                                                x: 0,
-                                                barRods: [
-                                                  BarChartRodData(
-                                                    toY: balance['expense']!,
-                                                    width: 20,
-                                                    color: Colors.red,
-                                                  ),
-                                                ],
-                                              ),
-                                              BarChartGroupData(
-                                                x: 1,
-                                                barRods: [
-                                                  BarChartRodData(
-                                                    toY: balance['income']!,
-                                                    width: 20,
-                                                    color: Colors.green,
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
+                              Card(
+                                margin: const EdgeInsets.all(16),
+                                child: SizedBox(
+                                  height: size.width,
+                                  width: double.infinity,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Income vs Expense",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: size.width,
-                                width: size.width,
-                                margin: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "Expense Distribution",
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: PieChart(
-                                          PieChartData(
-                                            centerSpaceRadius: 70,
-                                            sectionsSpace: 3,
-                                            sections: getPieChartSections(),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Container(
-                                height: size.width * 0.75,
-                                width: size.width,
-                                margin: EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "Daily Spending Trend",
-                                    ),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: LineChart(
-                                          LineChartData(
-                                            gridData: FlGridData(show: true),
-                                            borderData: FlBorderData(
-                                              show: true,
-                                            ),
-                                            titlesData: FlTitlesData(
-                                              leftTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: true,
-                                                  reservedSize: 40,
-                                                ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(20),
+                                          child: BarChart(
+                                            BarChartData(
+                                              alignment:
+                                                  BarChartAlignment.spaceAround,
+                                              borderData: FlBorderData(
+                                                show: false,
                                               ),
-                                              rightTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
+                                              gridData: FlGridData(show: true),
+                                              titlesData: FlTitlesData(
+                                                topTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: false,
+                                                  ),
                                                 ),
-                                              ),
-                                              topTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: false,
+                                                rightTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: false,
+                                                  ),
                                                 ),
-                                              ),
-                                              bottomTitles: AxisTitles(
-                                                sideTitles: SideTitles(
-                                                  showTitles: true,
-                                                  getTitlesWidget: (value, meta) {
-                                                    final entries =
-                                                        dailyTotals.entries
-                                                            .toList()
-                                                          ..sort(
-                                                            (a, b) =>
-                                                                a.key.compareTo(
-                                                                  b.key,
-                                                                ),
+                                                leftTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: true,
+                                                  ),
+                                                ),
+                                                bottomTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: true,
+                                                    getTitlesWidget: (value, meta) {
+                                                      switch (value.toInt()) {
+                                                        case 0:
+                                                          return const Text(
+                                                            "Expense",
                                                           );
-
-                                                    if (value.toInt() >=
-                                                        entries.length) {
-                                                      return const SizedBox();
-                                                    }
-
-                                                    final day =
-                                                        entries[value.toInt()]
-                                                            .key
-                                                            .day;
-
-                                                    return Text(day.toString());
-                                                  },
+                                                        case 1:
+                                                          return const Text(
+                                                            "Income",
+                                                          );
+                                                        default:
+                                                          return const SizedBox();
+                                                      }
+                                                    },
+                                                  ),
                                                 ),
                                               ),
+                                              barGroups: [
+                                                BarChartGroupData(
+                                                  x: 0,
+                                                  barRods: [
+                                                    BarChartRodData(
+                                                      toY: balance['expense']!,
+                                                      width: 20,
+                                                      color: Colors.red,
+                                                    ),
+                                                  ],
+                                                ),
+                                                BarChartGroupData(
+                                                  x: 1,
+                                                  barRods: [
+                                                    BarChartRodData(
+                                                      toY: balance['income']!,
+                                                      width: 20,
+                                                      color: Colors.green,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
                                             ),
-                                            lineBarsData: [
-                                              LineChartBarData(
-                                                spots: getLineSpots(),
-                                                isCurved: true,
-                                                color: Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                                barWidth: 4,
-                                                dotData: FlDotData(show: true),
-                                                belowBarData: BarAreaData(
-                                                  show: true,
-                                                  color: Colors.brown
-                                                      .withOpacity(0.2),
-                                                ),
-                                                isStrokeCapRound: true,
-                                                preventCurveOverShooting: true,
-                                              ),
-                                            ],
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                margin: const EdgeInsets.all(16),
+                                child: SizedBox(
+                                  height: size.width,
+                                  width: double.infinity,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Expense Distribution",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium,
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: PieChart(
+                                            PieChartData(
+                                              centerSpaceRadius: 70,
+                                              sectionsSpace: 3,
+                                              sections: getPieChartSections(),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                margin: const EdgeInsets.all(16),
+                                child: SizedBox(
+                                  height: size.width,
+                                  width: double.infinity,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        "Daily Spending Trend",
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.titleMedium,
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: LineChart(
+                                            LineChartData(
+                                              gridData: FlGridData(
+                                                show: true,
+                                                drawVerticalLine: true,
+                                                getDrawingHorizontalLine:
+                                                    (value) {
+                                                      return FlLine(
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).dividerColor,
+                                                        strokeWidth: 1,
+                                                      );
+                                                    },
+                                                getDrawingVerticalLine:
+                                                    (value) {
+                                                      return FlLine(
+                                                        color: Theme.of(
+                                                          context,
+                                                        ).dividerColor,
+                                                        strokeWidth: 1,
+                                                      );
+                                                    },
+                                              ),
+                                              borderData: FlBorderData(
+                                                border: Border.all(
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).dividerColor,
+                                                ),
+                                              ),
+                                              titlesData: FlTitlesData(
+                                                leftTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: true,
+                                                    reservedSize: 40,
+                                                  ),
+                                                ),
+                                                rightTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: false,
+                                                  ),
+                                                ),
+                                                topTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: false,
+                                                  ),
+                                                ),
+                                                bottomTitles: AxisTitles(
+                                                  sideTitles: SideTitles(
+                                                    showTitles: true,
+                                                    getTitlesWidget: (value, meta) {
+                                                      final entries =
+                                                          dailyTotals.entries
+                                                              .toList()
+                                                            ..sort(
+                                                              (a, b) => a.key
+                                                                  .compareTo(
+                                                                    b.key,
+                                                                  ),
+                                                            );
+
+                                                      if (value.toInt() >=
+                                                          entries.length) {
+                                                        return const SizedBox();
+                                                      }
+
+                                                      final day =
+                                                          entries[value.toInt()]
+                                                              .key
+                                                              .day;
+
+                                                      return Text(
+                                                        day.toString(),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                              lineBarsData: [
+                                                LineChartBarData(
+                                                  spots: getLineSpots(),
+                                                  isCurved: true,
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                                  barWidth: 4,
+                                                  dotData: FlDotData(
+                                                    show: true,
+                                                  ),
+                                                  belowBarData: BarAreaData(
+                                                    show: true,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                        .withValues(
+                                                          alpha: 0.20,
+                                                        ),
+                                                  ),
+                                                  isStrokeCapRound: true,
+                                                  preventCurveOverShooting:
+                                                      true,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],

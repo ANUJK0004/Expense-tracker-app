@@ -262,56 +262,33 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Future<void> showAccentDialog(BuildContext context) async {
-
-    final controller =
-    context.read<ThemeController>();
+    final controller = context.read<ThemeController>();
 
     showDialog(
-
       context: context,
 
       builder: (_) {
-
         return AlertDialog(
-
           title: const Text("Accent Color"),
 
           content: Wrap(
-
             spacing: 10,
 
-            children:
-
-            AppColors.colors.map((color) {
-
+            children: AppColors.colors.map((color) {
               return GestureDetector(
-
                 onTap: () {
-
                   controller.changeAccent(color);
 
                   Navigator.pop(context);
-
                 },
 
-                child: CircleAvatar(
-
-                  backgroundColor: color,
-
-                ),
-
+                child: CircleAvatar(backgroundColor: color),
               );
-
             }).toList(),
-
           ),
-
         );
-
       },
-
     );
-
   }
 
   @override
@@ -324,13 +301,12 @@ class SettingsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           Card(
-            elevation: 3,
             child: Column(
               children: [
-                const ListTile(
+                ListTile(
                   title: Text(
                     "Appearance",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
 
@@ -343,41 +319,27 @@ class SettingsScreen extends StatelessWidget {
                 ),
 
                 ListTile(
-
                   leading: const Icon(Icons.palette),
-
                   title: const Text("Accent Color"),
-
-                  trailing: CircleAvatar(
-
-                    radius: 12,
-
-                    backgroundColor:
-                    context.watch<ThemeController>().seedColor,
-
-                  ),
+                  trailing: const Icon(Icons.chevron_right),
 
                   onTap: () {
-
                     showAccentDialog(context);
-
                   },
-
-                )
+                ),
               ],
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           Card(
-            elevation: 3,
             child: Column(
               children: [
-                const ListTile(
+                ListTile(
                   title: Text(
                     "Data",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
 
@@ -389,7 +351,11 @@ class SettingsScreen extends StatelessWidget {
                     await onExportJson();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Backup exported")),
+                        const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          showCloseIcon: true,
+                          content: Text("✔ Backup exported successfully"),
+                        ),
                       );
                     }
                   },
@@ -403,7 +369,11 @@ class SettingsScreen extends StatelessWidget {
 
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("CSV exported")),
+                        const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          showCloseIcon: true,
+                          content: Text("CSV exported"),
+                        ),
                       );
                     }
                   },
@@ -417,7 +387,11 @@ class SettingsScreen extends StatelessWidget {
 
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Transactions imported")),
+                        const SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          showCloseIcon: true,
+                          content: Text("Transactions imported"),
+                        ),
                       );
                     }
                   },
@@ -437,16 +411,15 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           Card(
-            elevation: 3,
             child: Column(
               children: [
-                const ListTile(
+                ListTile(
                   title: Text(
                     "Preferences",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
 
@@ -459,6 +432,7 @@ class SettingsScreen extends StatelessWidget {
                       return Text(controller.currency);
                     },
                   ),
+                  trailing: const Icon(Icons.chevron_right),
 
                   onTap: () {
                     showCurrencyDialog(context);
@@ -474,6 +448,7 @@ class SettingsScreen extends StatelessWidget {
                       return Text(controller.dateFormat);
                     },
                   ),
+                  trailing: const Icon(Icons.chevron_right),
 
                   onTap: () {
                     showDateFormatDialog(context);
@@ -482,91 +457,70 @@ class SettingsScreen extends StatelessWidget {
                 ListTile(
                   leading: const Icon(Icons.bar_chart),
 
-                  title: const Text(
-                    "Default Analytics Filter",
-                  ),
+                  title: const Text("Default Analytics Filter"),
 
                   subtitle: Consumer<SettingsController>(
-                    builder: (_, controller, __) {
-                      return Text(
-                        controller.analyticsFilter,
-                      );
+                    builder: (_, controller, _) {
+                      return Text(controller.analyticsFilter);
                     },
                   ),
+                  trailing: const Icon(Icons.chevron_right),
 
                   onTap: () {
                     showAnalyticsDialog(context);
                   },
-                )
-
+                ),
               ],
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
           Card(
-            elevation: 3,
             child: Column(
               children: [
-                const ListTile(
+                ListTile(
                   title: Text(
                     "About",
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
 
                 ListTile(
-
                   leading: const Icon(Icons.star),
 
                   title: const Text("Rate App"),
 
                   onTap: () {
-
                     RateService.rateApp();
-
                   },
-
                 ),
 
                 ListTile(
-
                   leading: const Icon(Icons.bug_report),
 
                   title: const Text("Report Bug"),
 
                   onTap: () {
-
                     ReportBugService.reportBug();
-
                   },
-
                 ),
 
                 ListTile(
-
                   leading: const Icon(Icons.privacy_tip),
 
                   title: const Text("Privacy Policy"),
+                  trailing: const Icon(Icons.chevron_right),
 
                   onTap: () {
-
                     Navigator.push(
-
                       context,
 
                       MaterialPageRoute(
-
-                        builder: (_) =>
-                        const PrivacyPolicyScreen(),
-
+                        builder: (_) => const PrivacyPolicyScreen(),
                       ),
-
                     );
-
                   },
-
                 ),
 
                 const Divider(),
