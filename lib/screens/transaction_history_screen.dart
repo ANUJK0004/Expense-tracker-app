@@ -10,11 +10,13 @@ class TransactionsHistory extends StatefulWidget {
     required this.transactions,
     required this.onDelete,
     required this.onTap,
+    required this.onFilter,
   });
 
   final List<ExpenseTransaction> transactions;
   final Future<void> Function(ExpenseTransaction transaction) onDelete;
   final void Function(ExpenseTransaction transaction) onTap;
+  final VoidCallback onFilter;
 
   @override
   State<TransactionsHistory> createState() => _TransactionsHistoryState();
@@ -49,14 +51,18 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
         title: Text("Transactions History"),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+
+            },
             icon: Icon(
               Icons.search_rounded,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+
+            },
             icon: Icon(
               Icons.filter_alt_outlined,
               color: Theme.of(context).colorScheme.onPrimary,

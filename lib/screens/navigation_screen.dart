@@ -6,6 +6,7 @@
   import 'package:exes/screens/settings_screen.dart';
 import 'package:exes/services/import_export_service.dart';
   import 'package:exes/widgets/expense_bottom_sheet.dart';
+import 'package:exes/widgets/filter_bottom_sheet.dart';
   import 'package:exes/widgets/floating_action_button.dart';
   import 'package:exes/widgets/navigation_bar.dart';
   import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ import 'package:exes/services/import_export_service.dart';
       });
     }
 
-    Future<void> openBottomSheet() async {
+    Future<void> openExpenseBottomSheet() async {
       final added = await showModalBottomSheet<bool>(
         context: context,
         isScrollControlled: true,
@@ -47,6 +48,25 @@ import 'package:exes/services/import_export_service.dart';
       if (added == true) {
         await loadTransactions();
       }
+    }
+
+    Future<void> openFilterBottomSheet() async {
+      final added = await showModalBottomSheet<bool>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => FilterBottomSheet(onFilter: filterTransaction),
+      );
+
+      if (added == true) {
+        await loadTransactions();
+      }
+    }
+
+    Future<void> filterTransaction(ExpenseTransaction transaction) async {
+      await DatabaseHelper.instance.insertTransaction(transaction);
     }
 
     Future<void> insertTransaction(ExpenseTransaction transaction) async {
@@ -123,6 +143,7 @@ import 'package:exes/services/import_export_service.dart';
                 transactions: transactions,
                 onDelete: deleteTransaction,
                 onTap : editTransaction,
+                onFilter: openFilterBottomSheet,
               ),
               SettingsScreen(
                 onClearAll: clearAllTransactions,
@@ -132,7 +153,7 @@ import 'package:exes/services/import_export_service.dart';
               ),
             ],
           ),
-          floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openBottomSheet) : null,
+          floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openExpenseBottomSheet) : null,
           floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
         ),
       );
