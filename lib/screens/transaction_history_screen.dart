@@ -61,7 +61,7 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
           ),
           IconButton(
             onPressed: () {
-
+              widget.onFilter();
             },
             icon: Icon(
               Icons.filter_alt_outlined,

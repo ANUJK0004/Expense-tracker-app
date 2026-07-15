@@ -40,7 +40,6 @@ import 'package:exes/widgets/filter_bottom_sheet.dart';
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
-        showDragHandle: true,
         backgroundColor: Colors.transparent,
         builder: (_) => ExpenseBottomSheet(onAdd: insertTransaction),
       );
@@ -55,9 +54,8 @@ import 'package:exes/widgets/filter_bottom_sheet.dart';
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
-        showDragHandle: true,
         backgroundColor: Colors.transparent,
-        builder: (_) => FilterBottomSheet(onFilter: filterTransaction),
+        builder: (_) => FilterBottomSheet(),
       );
 
       if (added == true) {
@@ -65,9 +63,6 @@ import 'package:exes/widgets/filter_bottom_sheet.dart';
       }
     }
 
-    Future<void> filterTransaction(ExpenseTransaction transaction) async {
-      await DatabaseHelper.instance.insertTransaction(transaction);
-    }
 
     Future<void> insertTransaction(ExpenseTransaction transaction) async {
       await DatabaseHelper.instance.insertTransaction(transaction);
