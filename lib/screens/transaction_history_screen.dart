@@ -26,35 +26,26 @@ class TransactionsHistory extends StatefulWidget {
 
 String selectedCategory = "All";
 
-class _TransactionsHistoryState extends State<TransactionsHistory> {
+class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTickerProviderStateMixin{
   late List<ExpenseTransaction> displayedTransactions;
-  TransactionFilter? currentFilter = TransactionFilter.empty();
-
-  Future<void> openFilterBottomSheet() async {
-    await showModalBottomSheet<bool>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => FilterBottomSheet(onFilter: applyFilters),
-    );
-  }
-
-  Future<void> applyFilters(TransactionFilter filter) async {
-    currentFilter = filter;
-    final result = await DatabaseHelper.instance.getFilteredTransactions(
-      filter,
-    );
-    if (!mounted) return;
-    setState(() {
-      displayedTransactions = result;
-    });
-  }
+  TransactionFilter currentFilter = TransactionFilter.empty();
+  bool isFiltering = false;
+  late final AnimationController sheetController;
 
   @override
   void initState() {
     super.initState();
     displayedTransactions = List.from(widget.transactions);
+    sheetController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
+  }
+
+  @override
+  void dispose() {
+    sheetController.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,6 +54,45 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
     if (oldWidget.transactions != widget.transactions) {
       displayedTransactions = List.from(widget.transactions);
     }
+  }
+
+  Future<void> applyFilter(TransactionFilter filter) async {
+    setState(() {
+      isFiltering = true;
+    });
+    final transactions = await DatabaseHelper.instance.getFilteredTransactions(
+      filter,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      currentFilter = filter;
+      displayedTransactions = transactions;
+      isFiltering = false;
+    });
+  }
+
+  Future<void> openFilterBottomSheet() async {
+    final result = await showModalBottomSheet<TransactionFilter>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      transitionAnimationController: sheetController,
+      builder: (_) => FilterBottomSheet(onFilter: applyFilter),
+    );
+
+    if (result == null) return;
+  }
+
+
+  Future<void> clearFilters() async {
+    setState(() {
+      currentFilter = TransactionFilter.empty();
+
+      displayedTransactions = List.from(widget.transactions);
+    });
   }
 
   @override
@@ -91,10 +121,37 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
               widget.onTap(result);
             },
           ),
+          if (currentFilter.hasFilters)
+            IconButton(
+              onPressed: clearFilters,
+
+              icon: Icon(
+                Icons.clear_all,
+                color: Theme.of(context).colorScheme.onPrimary,
+              ),
+            ),
           IconButton(
-            icon: Icon(
-              Icons.filter_alt_outlined,
-              color: Theme.of(context).colorScheme.onPrimary,
+            icon: Stack(
+              children: [
+                Icon(
+                  Icons.filter_alt_outlined,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+
+                if (currentFilter.hasFilters)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: CircleAvatar(
+                      radius: 8,
+                      backgroundColor: Colors.red,
+                      child: Text(
+                        currentFilter.activeFilterCount.toString(),
+                        style: TextStyle(fontSize: 10, color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             onPressed: () async {
               await openFilterBottomSheet();
@@ -103,144 +160,317 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
         ],
         centerTitle: true,
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: displayedTransactions.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.receipt_long_outlined,
-                      size: 80,
-                      color: Theme.of(context).colorScheme.outline,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    Text(
-                      "No Transactions",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      "Tap + to add your first transaction",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              )
-            : Column(
-                children: [
-                  Expanded(
-                    child: ListView.separated(
-                      separatorBuilder: (context, index) =>
-                          Divider(indent: 16, endIndent: 16),
-                      physics: BouncingScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      itemCount: displayedTransactions.length,
-                      itemBuilder: (context, index) {
-                        final transaction = displayedTransactions[index];
-                        return Column(
+      body: isFiltering
+          ? const Center(child: CircularProgressIndicator())
+          : SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: displayedTransactions.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Dismissible(
-                              key: ValueKey(transaction.id),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (direction) async {
-                                await widget.onDelete(transaction);
-                              },
-                              background: Container(
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.only(right: 24),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.errorContainer,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.delete_outline,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onErrorContainer,
-                                ),
-                              ),
-                              child: Card(
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                child: ListTile(
-                                  onTap: () {
-                                    widget.onTap(transaction);
-                                  },
-                                  leading: CircleAvatar(
-                                    backgroundColor: Theme.of(
+                            Icon(
+                              currentFilter.hasFilters
+                                  ? Icons.manage_search_rounded
+                                  : Icons.receipt_long_rounded,
+                              size: 90,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            Text(
+                              currentFilter.hasFilters
+                                  ? "No Matching Transactions"
+                                  : "No Transactions Yet",
+                              style: Theme.of(context).textTheme.headlineSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            Text(
+                              currentFilter.hasFilters
+                                  ? "Try changing your filters or clear them to view all transactions."
+                                  : "Start tracking your expenses by adding your first transaction.",
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: Theme.of(
                                       context,
-                                    ).colorScheme.primaryContainer,
-                                    child: Text(
-                                      transaction.category.split(" ").first,
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.onPrimaryContainer,
-                                      ),
-                                    ),
+                                    ).colorScheme.onSurfaceVariant,
                                   ),
-                                  title: Text(
-                                    transaction.category.split(" ").last,
+                              textAlign: TextAlign.center,
+                            ),
+
+                            const SizedBox(height: 28),
+
+                            if (currentFilter.hasFilters)
+                              FilledButton.icon(
+                                onPressed: clearFilters,
+                                icon: const Icon(Icons.filter_alt_off),
+                                label: const Text("Clear Filters"),
+                              ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.sort, size: 18),
+                            SizedBox(width: 8),
+                            Text(currentFilter.sortBy),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "${displayedTransactions.length} Transactions",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              if (currentFilter.hasFilters)
+                                Text(
+                                  "Filtered",
+                                  style: TextStyle(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (currentFilter.hasFilters)
+                          Card(
+                            margin: const EdgeInsets.all(16),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Active Filters",
                                     style: Theme.of(
                                       context,
                                     ).textTheme.titleMedium,
                                   ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  const SizedBox(height: 12),
+                                  Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
                                     children: [
-                                      Text(
-                                        transaction.note.isEmpty
-                                            ? "No note"
-                                            : transaction.note,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium,
-                                      ),
-                                      Text(
-                                        DateFormat(
-                                          settings.dateFormat,
-                                        ).format(transaction.date),
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodySmall,
-                                      ),
+                                      if (currentFilter.type != "All")
+                                        Chip(
+                                          label: Text(currentFilter.type),
+                                          onDeleted: () {
+                                            applyFilter(
+                                              currentFilter.copyWith(
+                                                type: "All",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      if (currentFilter.category != "All")
+                                        Chip(
+                                          label: Text(currentFilter.category),
+
+                                          onDeleted: () {
+                                            applyFilter(
+                                              currentFilter.copyWith(
+                                                category: "All",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      if (currentFilter.startDate != null)
+                                        Chip(
+                                          label: const Text("Date"),
+                                          onDeleted: () {
+                                            applyFilter(
+                                              currentFilter.copyWith(
+                                                startDate: null,
+                                                endDate: null,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      if (currentFilter.startAmount != 0 ||
+                                          currentFilter.endAmount !=
+                                              double.infinity)
+                                        Chip(
+                                          label: const Text("Amount"),
+
+                                          onDeleted: () {
+                                            applyFilter(
+                                              currentFilter.copyWith(
+                                                startAmount: 0,
+                                                endAmount: double.infinity,
+                                              ),
+                                            );
+                                          },
+                                        ),
                                     ],
                                   ),
-                                  trailing: Text(
-                                    "${transaction.type == "Expense" ? "-" : "+"}"
-                                    "${settings.currency}"
-                                    "${transaction.amount.toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: transaction.type == "Expense"
-                                          ? Colors.red
-                                          : Colors.green,
-                                    ),
-                                  ),
-                                ),
+                                ],
                               ),
                             ),
-                          ],
-                        );
-                      },
+                          ),
+                        Expanded(
+                          child: RefreshIndicator(
+                            onRefresh: () async {
+                              if (currentFilter.hasFilters) {
+                                await applyFilter(currentFilter);
+                              } else {
+                                displayedTransactions = List.from(
+                                  widget.transactions,
+                                );
+                                setState(() {});
+                              }
+                            },
+                            child: ListView.separated(
+                              separatorBuilder: (context, index) =>
+                                  Divider(indent: 16, endIndent: 16),
+                              physics: BouncingScrollPhysics(),
+                              scrollDirection: Axis.vertical,
+                              itemCount: displayedTransactions.length,
+                              itemBuilder: (context, index) {
+                                final transaction =
+                                    displayedTransactions[index];
+                                return Column(
+                                  children: [
+                                    Dismissible(
+                                      key: ValueKey(transaction.id),
+                                      direction: DismissDirection.endToStart,
+                                      onDismissed: (direction) async {
+                                        await widget.onDelete(transaction);
+
+                                        if (currentFilter.hasFilters) {
+                                          await applyFilter(currentFilter);
+                                        } else {
+                                          displayedTransactions.remove(
+                                            transaction,
+                                          );
+                                          if (mounted) {
+                                            setState(() {});
+                                          }
+                                        }
+                                      },
+                                      background: Container(
+                                        alignment: Alignment.centerRight,
+                                        padding: const EdgeInsets.only(
+                                          right: 24,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.errorContainer,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: Icon(
+                                          Icons.delete_outline,
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onErrorContainer,
+                                        ),
+                                      ),
+                                      child: Card(
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 4,
+                                        ),
+                                        child: AnimatedContainer(
+                                          duration: Duration(milliseconds: 300),
+                                          curve: Curves.easeInOut,
+                                          child: ListTile(
+                                            onTap: () {
+                                              widget.onTap(transaction);
+                                            },
+                                            leading: CircleAvatar(
+                                              backgroundColor: Theme.of(
+                                                context,
+                                              ).colorScheme.primaryContainer,
+                                              child: Text(
+                                                transaction.category
+                                                    .split(" ")
+                                                    .first,
+                                                style: TextStyle(
+                                                  fontSize: 24,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimaryContainer,
+                                                ),
+                                              ),
+                                            ),
+                                            title: Text(
+                                              transaction.category
+                                                  .split(" ")
+                                                  .last,
+                                              style: Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium,
+                                            ),
+                                            subtitle: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  transaction.note.isEmpty
+                                                      ? "No note"
+                                                      : transaction.note,
+                                                  style: Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyMedium,
+                                                ),
+                                                Text(
+                                                  DateFormat(
+                                                    settings.dateFormat,
+                                                  ).format(transaction.date),
+                                                  style: Theme.of(
+                                                    context,
+                                                  ).textTheme.bodySmall,
+                                                ),
+                                              ],
+                                            ),
+                                            trailing: Text(
+                                              "${transaction.type == "Expense" ? "-" : "+"}"
+                                              "${settings.currency}"
+                                              "${transaction.amount.toStringAsFixed(2)}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color:
+                                                    transaction.type ==
+                                                        "Expense"
+                                                    ? Colors.red
+                                                    : Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-      ),
+            ),
     );
   }
 }
