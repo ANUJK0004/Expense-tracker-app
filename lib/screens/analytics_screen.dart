@@ -318,74 +318,156 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding: EdgeInsets.all(20),
-                                          child: BarChart(
-                                            BarChartData(
-                                              alignment:
-                                                  BarChartAlignment.spaceAround,
-                                              borderData: FlBorderData(
-                                                show: false,
-                                              ),
-                                              gridData: FlGridData(show: true),
-                                              titlesData: FlTitlesData(
-                                                topTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: false,
+                                          padding: const EdgeInsets.all(20),
+                                          child: Builder(
+                                            builder: (context) {
+                                              final expense = balance['expense']!;
+                                              final income = balance['income']!;
+
+                                              final highest = expense > income ? expense : income;
+
+                                              final maxY =
+                                              highest == 0
+                                                  ? 100
+                                                  : ((highest * 1.2) / 1000).ceil() * 1000;
+
+                                              final interval = maxY / 5;
+
+                                              String formatYAxis(double value) {
+                                                if (value >= 1000) {
+                                                  if (value % 1000 == 0) {
+                                                    return "${(value / 1000).toInt()}K";
+                                                  }
+                                                  return "${(value / 1000).toStringAsFixed(1)}K";
+                                                }
+                                                return value.toInt().toString();
+                                              }
+
+                                              return BarChart(
+                                                BarChartData(
+                                                  maxY: maxY.toDouble(),
+                                                  alignment: BarChartAlignment.spaceEvenly,
+
+                                                  gridData: FlGridData(
+                                                    show: true,
+                                                    horizontalInterval: interval,
+                                                    drawVerticalLine: false,
+                                                    getDrawingHorizontalLine: (_) => FlLine(
+                                                      color: Theme.of(context).dividerColor,
+                                                      strokeWidth: 1,
+                                                    ),
                                                   ),
-                                                ),
-                                                rightTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: false,
+
+                                                  borderData: FlBorderData(show: false),
+
+                                                  barTouchData: BarTouchData(
+                                                    enabled: true,
+                                                    touchTooltipData: BarTouchTooltipData(
+                                                      getTooltipColor: (_) =>
+                                                      Theme.of(context).colorScheme.inverseSurface,
+                                                      tooltipBorderRadius: BorderRadius.circular(12),
+                                                      tooltipPadding: const EdgeInsets.all(10),
+                                                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                                                        final title =
+                                                        group.x == 0 ? "Expense" : "Income";
+
+                                                        return BarTooltipItem(
+                                                          "$title\n"
+                                                              "${rod.toY.toStringAsFixed(2)}",
+                                                          TextStyle(
+                                                            color:
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .onInverseSurface,
+                                                            fontWeight: FontWeight.bold,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
                                                   ),
-                                                ),
-                                                leftTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: true,
-                                                  ),
-                                                ),
-                                                bottomTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: true,
-                                                    getTitlesWidget: (value, meta) {
-                                                      switch (value.toInt()) {
-                                                        case 0:
-                                                          return const Text(
-                                                            "Expense",
+
+                                                  titlesData: FlTitlesData(
+                                                    topTitles: const AxisTitles(
+                                                      sideTitles: SideTitles(showTitles: false),
+                                                    ),
+
+                                                    rightTitles: const AxisTitles(
+                                                      sideTitles: SideTitles(showTitles: false),
+                                                    ),
+
+                                                    leftTitles: AxisTitles(
+                                                      sideTitles: SideTitles(
+                                                        showTitles: true,
+                                                        reservedSize: 45,
+                                                        interval: interval,
+                                                        getTitlesWidget: (value, meta) {
+                                                          return Padding(
+                                                            padding: const EdgeInsets.only(right: 6),
+                                                            child: Text(
+                                                              formatYAxis(value),
+                                                              style: Theme.of(context)
+                                                                  .textTheme
+                                                                  .labelSmall,
+                                                            ),
                                                           );
-                                                        case 1:
-                                                          return const Text(
-                                                            "Income",
-                                                          );
-                                                        default:
-                                                          return const SizedBox();
-                                                      }
-                                                    },
+                                                        },
+                                                      ),
+                                                    ),
+
+                                                    bottomTitles: AxisTitles(
+                                                      sideTitles: SideTitles(
+                                                        showTitles: true,
+                                                        reservedSize: 32,
+                                                        getTitlesWidget: (value, meta) {
+                                                          switch (value.toInt()) {
+                                                            case 0:
+                                                              return const Padding(
+                                                                padding: EdgeInsets.only(top: 8),
+                                                                child: Text("Expense"),
+                                                              );
+
+                                                            case 1:
+                                                              return const Padding(
+                                                                padding: EdgeInsets.only(top: 8),
+                                                                child: Text("Income"),
+                                                              );
+
+                                                            default:
+                                                              return const SizedBox();
+                                                          }
+                                                        },
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                              barGroups: [
-                                                BarChartGroupData(
-                                                  x: 0,
-                                                  barRods: [
-                                                    BarChartRodData(
-                                                      toY: balance['expense']!,
-                                                      width: 20,
-                                                      color: Colors.red,
+
+                                                  barGroups: [
+                                                    BarChartGroupData(
+                                                      x: 0,
+                                                      barRods: [
+                                                        BarChartRodData(
+                                                          toY: expense,
+                                                          width: 28,
+                                                          borderRadius: BorderRadius.circular(8),
+                                                          color: Colors.redAccent,
+                                                        ),
+                                                      ],
+                                                    ),
+
+                                                    BarChartGroupData(
+                                                      x: 1,
+                                                      barRods: [
+                                                        BarChartRodData(
+                                                          toY: income,
+                                                          width: 28,
+                                                          borderRadius: BorderRadius.circular(8),
+                                                          color: Colors.green,
+                                                        ),
+                                                      ],
                                                     ),
                                                   ],
                                                 ),
-                                                BarChartGroupData(
-                                                  x: 1,
-                                                  barRods: [
-                                                    BarChartRodData(
-                                                      toY: balance['income']!,
-                                                      width: 20,
-                                                      color: Colors.green,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                              );
+                                            },
                                           ),
                                         ),
                                       ),
@@ -437,112 +519,201 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                       ),
                                       Expanded(
                                         child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: LineChart(
-                                            LineChartData(
-                                              gridData: FlGridData(
-                                                show: true,
-                                                drawVerticalLine: true,
-                                                getDrawingHorizontalLine:
-                                                    (value) {
-                                                      return FlLine(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).dividerColor,
-                                                        strokeWidth: 1,
-                                                      );
-                                                    },
-                                                getDrawingVerticalLine:
-                                                    (value) {
-                                                      return FlLine(
-                                                        color: Theme.of(
-                                                          context,
-                                                        ).dividerColor,
-                                                        strokeWidth: 1,
-                                                      );
-                                                    },
-                                              ),
-                                              borderData: FlBorderData(
-                                                border: Border.all(
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).dividerColor,
-                                                ),
-                                              ),
-                                              titlesData: FlTitlesData(
-                                                leftTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: true,
-                                                    reservedSize: 40,
-                                                  ),
-                                                ),
-                                                rightTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: false,
-                                                  ),
-                                                ),
-                                                topTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: false,
-                                                  ),
-                                                ),
-                                                bottomTitles: AxisTitles(
-                                                  sideTitles: SideTitles(
-                                                    showTitles: true,
-                                                    getTitlesWidget: (value, meta) {
-                                                      final entries =
-                                                          dailyTotals.entries
-                                                              .toList()
-                                                            ..sort(
-                                                              (a, b) => a.key
-                                                                  .compareTo(
-                                                                    b.key,
-                                                                  ),
-                                                            );
+                                          padding: const EdgeInsets.all(12),
+                                          child: Builder(
+                                            builder: (context) {
+                                              final entries = dailyTotals.entries.toList()
+                                                ..sort((a, b) => a.key.compareTo(b.key));
 
-                                                      if (value.toInt() >=
-                                                          entries.length) {
-                                                        return const SizedBox();
-                                                      }
+                                              if (entries.isEmpty) {
+                                                return const SizedBox();
+                                              }
 
-                                                      final day =
-                                                          entries[value.toInt()]
-                                                              .key
-                                                              .day;
+                                              final maxY = entries
+                                                  .map((e) => e.value)
+                                                  .reduce((a, b) => a > b ? a : b);
 
-                                                      return Text(
-                                                        day.toString(),
-                                                      );
-                                                    },
-                                                  ),
-                                                ),
-                                              ),
-                                              lineBarsData: [
-                                                LineChartBarData(
-                                                  spots: getLineSpots(),
-                                                  isCurved: true,
-                                                  color: Theme.of(
-                                                    context,
-                                                  ).colorScheme.primary,
-                                                  barWidth: 4,
-                                                  dotData: FlDotData(
+                                              final chartMaxY =
+                                                  ((maxY * 1.2) / 1000).ceil() * 1000;
+
+                                              final interval = chartMaxY / 5;
+
+                                              String formatAmount(double value) {
+                                                if (value >= 1000) {
+                                                  if (value % 1000 == 0) {
+                                                    return "${(value / 1000).toInt()}K";
+                                                  }
+                                                  return "${(value / 1000).toStringAsFixed(1)}K";
+                                                }
+                                                return value.toInt().toString();
+                                              }
+
+                                              return LineChart(
+                                                LineChartData(
+                                                  minX: 0,
+                                                  maxX: (entries.length - 1).toDouble(),
+
+                                                  minY: 0,
+                                                  maxY: chartMaxY.toDouble(),
+
+                                                  clipData: const FlClipData.all(),
+
+                                                  gridData: FlGridData(
                                                     show: true,
+                                                    horizontalInterval: interval,
+                                                    drawVerticalLine: false,
+                                                    getDrawingHorizontalLine: (_) => FlLine(
+                                                      color: Theme.of(context).dividerColor,
+                                                      strokeWidth: 1,
+                                                    ),
                                                   ),
-                                                  belowBarData: BarAreaData(
+
+                                                  borderData: FlBorderData(
                                                     show: true,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary
-                                                        .withValues(
-                                                          alpha: 0.20,
+                                                    border: Border(
+                                                      left: BorderSide(
+                                                        color: Theme.of(context).dividerColor,
+                                                      ),
+                                                      bottom: BorderSide(
+                                                        color: Theme.of(context).dividerColor,
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  lineTouchData: LineTouchData(
+                                                    handleBuiltInTouches: true,
+
+                                                    touchTooltipData: LineTouchTooltipData(
+                                                      getTooltipColor: (_) =>
+                                                      Theme.of(context).colorScheme.inverseSurface,
+
+                                                      tooltipBorderRadius: BorderRadius.circular(12),
+
+                                                      getTooltipItems: (spots) {
+                                                        return spots.map((spot) {
+                                                          final date =
+                                                              entries[spot.x.toInt()].key;
+
+                                                          return LineTooltipItem(
+                                                            "${date.day}/${date.month}\n"
+                                                                "₹${spot.y.toStringAsFixed(2)}",
+                                                            TextStyle(
+                                                              color: Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onInverseSurface,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                          );
+                                                        }).toList();
+                                                      },
+                                                    ),
+                                                  ),
+
+                                                  titlesData: FlTitlesData(
+                                                    topTitles: const AxisTitles(
+                                                      sideTitles: SideTitles(showTitles: false),
+                                                    ),
+
+                                                    rightTitles: const AxisTitles(
+                                                      sideTitles: SideTitles(showTitles: false),
+                                                    ),
+
+                                                    leftTitles: AxisTitles(
+                                                      sideTitles: SideTitles(
+                                                        reservedSize: 45,
+                                                        showTitles: true,
+                                                        interval: interval,
+                                                        getTitlesWidget: (value, meta) {
+                                                          return Text(
+                                                            formatAmount(value),
+                                                            style: Theme.of(context)
+                                                                .textTheme
+                                                                .labelSmall,
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+
+                                                    bottomTitles: AxisTitles(
+                                                      sideTitles: SideTitles(
+                                                        showTitles: true,
+                                                        interval: entries.length > 6 ? 2 : 1,
+                                                        reservedSize: 35,
+                                                        getTitlesWidget: (value, meta) {
+                                                          if (value.toInt() >= entries.length) {
+                                                            return const SizedBox();
+                                                          }
+
+                                                          final date =
+                                                              entries[value.toInt()].key;
+
+                                                          return Padding(
+                                                            padding: const EdgeInsets.only(top: 8),
+                                                            child: Text(
+                                                              "${date.day}/${date.month}",
+                                                              style: Theme.of(context)
+                                                                  .textTheme
+                                                                  .labelSmall,
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  lineBarsData: [
+                                                    LineChartBarData(
+                                                      spots: getLineSpots(),
+
+                                                      isCurved: true,
+
+                                                      curveSmoothness: 0.35,
+
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .primary,
+
+                                                      barWidth: 4,
+
+                                                      isStrokeCapRound: true,
+
+                                                      dotData: FlDotData(
+                                                        show: true,
+                                                        getDotPainter:
+                                                            (spot, percent, barData, index) =>
+                                                            FlDotCirclePainter(
+                                                              radius: 5,
+                                                              color: Theme.of(context)
+                                                                  .colorScheme
+                                                                  .primary,
+                                                              strokeWidth: 2,
+                                                              strokeColor:
+                                                              Theme.of(context).cardColor,
+                                                            ),
+                                                      ),
+
+                                                      belowBarData: BarAreaData(
+                                                        show: true,
+                                                        gradient: LinearGradient(
+                                                          begin: Alignment.topCenter,
+                                                          end: Alignment.bottomCenter,
+                                                          colors: [
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                                .withValues(alpha: .35),
+                                                            Theme.of(context)
+                                                                .colorScheme
+                                                                .primary
+                                                                .withValues(alpha: .02),
+                                                          ],
                                                         ),
-                                                  ),
-                                                  isStrokeCapRound: true,
-                                                  preventCurveOverShooting:
-                                                      true,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            ),
+                                              );
+                                            },
                                           ),
                                         ),
                                       ),

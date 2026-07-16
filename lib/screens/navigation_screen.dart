@@ -132,8 +132,7 @@
               ),
             ],
           ),
-          floatingActionButton:
-          currentIndex == 0?AddExpenseButton(onPressed: openExpenseBottomSheet) : null,
+          floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openExpenseBottomSheet) : null,
           floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
         ),
       );

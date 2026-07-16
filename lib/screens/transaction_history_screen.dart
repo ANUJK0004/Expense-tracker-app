@@ -26,11 +26,15 @@ class TransactionsHistory extends StatefulWidget {
 
 String selectedCategory = "All";
 
-class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTickerProviderStateMixin{
+class _TransactionsHistoryState extends State<TransactionsHistory>
+    with SingleTickerProviderStateMixin {
   late List<ExpenseTransaction> displayedTransactions;
   TransactionFilter currentFilter = TransactionFilter.empty();
   bool isFiltering = false;
   late final AnimationController sheetController;
+  final ScrollController scrollController = ScrollController();
+
+  bool showFAB = false;
 
   @override
   void initState() {
@@ -40,11 +44,22 @@ class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTi
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
+
+    scrollController.addListener(() {
+      final shouldShow = scrollController.offset > 500;
+
+      if (shouldShow != showFAB) {
+        setState(() {
+          showFAB = shouldShow;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     sheetController.dispose();
+    scrollController.dispose();
     super.dispose();
   }
 
@@ -85,7 +100,6 @@ class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTi
 
     if (result == null) return;
   }
-
 
   Future<void> clearFilters() async {
     setState(() {
@@ -219,6 +233,7 @@ class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTi
                       ),
                     )
                   : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
@@ -250,79 +265,65 @@ class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTi
                           ),
                         ),
                         if (currentFilter.hasFilters)
-                          Card(
-                            margin: const EdgeInsets.all(16),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
                                 children: [
-                                  Text(
-                                    "Active Filters",
-                                    style: Theme.of(
-                                      context,
-                                    ).textTheme.titleMedium,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Wrap(
-                                    spacing: 8,
-                                    runSpacing: 8,
-                                    children: [
-                                      if (currentFilter.type != "All")
-                                        Chip(
-                                          label: Text(currentFilter.type),
-                                          onDeleted: () {
-                                            applyFilter(
-                                              currentFilter.copyWith(
-                                                type: "All",
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      if (currentFilter.category != "All")
-                                        Chip(
-                                          label: Text(currentFilter.category),
+                                  if (currentFilter.type != "All")
+                                    Chip(
+                                      label: Text(currentFilter.type),
+                                      onDeleted: () async {
+                                        await applyFilter(
+                                          currentFilter.copyWith(type: "All"),
+                                        );
+                                      },
+                                    ),
+                                  if (currentFilter.category != "All")
+                                    Chip(
+                                      label: Text(currentFilter.category),
 
-                                          onDeleted: () {
-                                            applyFilter(
-                                              currentFilter.copyWith(
-                                                category: "All",
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      if (currentFilter.startDate != null)
-                                        Chip(
-                                          label: const Text("Date"),
-                                          onDeleted: () {
-                                            applyFilter(
-                                              currentFilter.copyWith(
-                                                startDate: null,
-                                                endDate: null,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      if (currentFilter.startAmount != 0 ||
-                                          currentFilter.endAmount !=
-                                              double.infinity)
-                                        Chip(
-                                          label: const Text("Amount"),
+                                      onDeleted: () async {
+                                        await applyFilter(
+                                          currentFilter.copyWith(
+                                            category: "All",
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  if (currentFilter.startDate != null)
+                                    Chip(
+                                      label: const Text("Date"),
+                                      onDeleted: () async {
+                                        await applyFilter(
+                                          currentFilter.copyWith(
+                                            startDate: null,
+                                            endDate: null,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  if (currentFilter.startAmount != 0 ||
+                                      currentFilter.endAmount !=
+                                          double.infinity)
+                                    Chip(
+                                      label: const Text("Amount"),
 
-                                          onDeleted: () {
-                                            applyFilter(
-                                              currentFilter.copyWith(
-                                                startAmount: 0,
-                                                endAmount: double.infinity,
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                    ],
-                                  ),
+                                      onDeleted: () async {
+                                        await applyFilter(
+                                          currentFilter.copyWith(
+                                            startAmount: 0,
+                                            endAmount: double.infinity,
+                                          ),
+                                        );
+                                      },
+                                    ),
                                 ],
                               ),
                             ),
@@ -342,6 +343,7 @@ class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTi
                             child: ListView.separated(
                               separatorBuilder: (context, index) =>
                                   Divider(indent: 16, endIndent: 16),
+                              controller: scrollController,
                               physics: BouncingScrollPhysics(),
                               scrollDirection: Axis.vertical,
                               itemCount: displayedTransactions.length,
@@ -471,6 +473,25 @@ class _TransactionsHistoryState extends State<TransactionsHistory> with SingleTi
                       ],
                     ),
             ),
+      floatingActionButton: AnimatedSlide(
+        duration: const Duration(milliseconds: 250),
+        offset: showFAB ? Offset.zero : const Offset(0, 2),
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 250),
+          opacity: showFAB ? 1 : 0,
+          child: FloatingActionButton.small(
+            heroTag: "historyTop",
+            onPressed: () {
+              scrollController.animateTo(
+                0,
+                duration: const Duration(milliseconds: 450),
+                curve: Curves.easeOutCubic,
+              );
+            },
+            child: const Icon(Icons.keyboard_arrow_up_rounded),
+          ),
+        ),
+      ),
     );
   }
 }
