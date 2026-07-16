@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class FilterBottomSheet extends StatefulWidget {
-  const FilterBottomSheet({super.key});
-
+  const FilterBottomSheet({super.key,required this.onFilter});
+  final Future<void> Function(TransactionFilter filter) onFilter;
   @override
   State<FilterBottomSheet> createState() => _FilterBottomSheetState();
 }
@@ -497,6 +497,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       icon:
                       Icon(Icons.refresh),
                       onPressed: () {
+                        TransactionFilter.empty();
                         Navigator.pop(context);
                       },
                       label: Text("Reset"),
@@ -507,16 +508,22 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                       onPressed: () async {
                         if (!_formKey.currentState!.validate()) return;
                         final filter = TransactionFilter(
-                          type: selectedType as String,
+                          type: switch(selectedType){
+                            Type.all => "All",
+                            Type.income => "Income",
+                            Type.expense => "Expense",
+                          },
                           category: selectedCategory,
                           startAmount: startAmount,
                           endAmount: endAmount,
-                          startingDate: startSelectedDate!,
-                          endDate: endSelectedDate!,
+                          startDate: startSelectedDate,
+                          endDate: endSelectedDate,
                           sortBy: selectedSort,
                         );
-                        if (!context.mounted) return;
-                        Navigator.of(context).pop(true);
+                        await widget.onFilter(filter);
+                        if(context.mounted){
+                          Navigator.pop(context);
+                        }
                       },
                       label: Text("Apply Filters"),
                     ),

@@ -1,5 +1,9 @@
+import 'package:exes/database/database_helper.dart';
 import 'package:exes/models/expense.dart';
+import 'package:exes/models/transaction_filter.dart';
 import 'package:exes/services/settings_controller.dart';
+import 'package:exes/widgets/filter_bottom_sheet.dart';
+import 'package:exes/widgets/transaction_search_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -10,63 +14,91 @@ class TransactionsHistory extends StatefulWidget {
     required this.transactions,
     required this.onDelete,
     required this.onTap,
-    required this.onFilter,
   });
 
   final List<ExpenseTransaction> transactions;
   final Future<void> Function(ExpenseTransaction transaction) onDelete;
   final void Function(ExpenseTransaction transaction) onTap;
-  final VoidCallback onFilter;
 
   @override
   State<TransactionsHistory> createState() => _TransactionsHistoryState();
 }
 
+String selectedCategory = "All";
+
 class _TransactionsHistoryState extends State<TransactionsHistory> {
-  String selectedCategory = "All";
-  final List<String> categories = [
-    "All",
-    "🍔 Food",
-    "🚕 Transport",
-    "🛒 Shopping",
-    "🎬 Entertainment",
-    "🏥 Health",
-    "🎓 Education",
-    "💼 Salary",
-    "🎁 Gift",
-    "📈 Investment",
-    "📦 Others",
-  ];
+  late List<ExpenseTransaction> displayedTransactions;
+  TransactionFilter? currentFilter = TransactionFilter.empty();
+
+  Future<void> openFilterBottomSheet() async {
+    await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => FilterBottomSheet(onFilter: applyFilters),
+    );
+  }
+
+  Future<void> applyFilters(TransactionFilter filter) async {
+    currentFilter = filter;
+    final result = await DatabaseHelper.instance.getFilteredTransactions(
+      filter,
+    );
+    if (!mounted) return;
+    setState(() {
+      displayedTransactions = result;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    displayedTransactions = List.from(widget.transactions);
+  }
+
+  @override
+  void didUpdateWidget(covariant TransactionsHistory oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.transactions != widget.transactions) {
+      displayedTransactions = List.from(widget.transactions);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsController>();
-    final filteredTransactions = selectedCategory == "All"
-        ? widget.transactions
-        : widget.transactions
-              .where((transaction) => transaction.category == selectedCategory)
-              .toList();
     return Scaffold(
       appBar: AppBar(
         title: Text("Transactions History"),
         actions: [
           IconButton(
-            onPressed: () {
-
-            },
             icon: Icon(
               Icons.search_rounded,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
+            onPressed: () async {
+              final result = await showSearch<ExpenseTransaction?>(
+                context: context,
+
+                delegate: TransactionSearchDelegate(
+                  transactions: displayedTransactions,
+                ),
+              );
+
+              if (result == null) return;
+
+              widget.onTap(result);
+            },
           ),
           IconButton(
-            onPressed: () {
-              widget.onFilter();
-            },
             icon: Icon(
               Icons.filter_alt_outlined,
               color: Theme.of(context).colorScheme.onPrimary,
             ),
+            onPressed: () async {
+              await openFilterBottomSheet();
+            },
           ),
         ],
         centerTitle: true,
@@ -74,7 +106,7 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        child: widget.transactions.isEmpty
+        child: displayedTransactions.isEmpty
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -103,36 +135,15 @@ class _TransactionsHistoryState extends State<TransactionsHistory> {
               )
             : Column(
                 children: [
-                  SizedBox(
-                    height: 50,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: categories.length,
-                      itemBuilder: (build, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: ChoiceChip(
-                            label: Text(categories[index]),
-                            selected: selectedCategory == categories[index],
-                            onSelected: (_) {
-                              setState(() {
-                                selectedCategory = categories[index];
-                              });
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
                   Expanded(
                     child: ListView.separated(
                       separatorBuilder: (context, index) =>
                           Divider(indent: 16, endIndent: 16),
                       physics: BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
-                      itemCount: filteredTransactions.length,
+                      itemCount: displayedTransactions.length,
                       itemBuilder: (context, index) {
-                        final transaction = filteredTransactions[index];
+                        final transaction = displayedTransactions[index];
                         return Column(
                           children: [
                             Dismissible(

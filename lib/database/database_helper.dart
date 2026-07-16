@@ -1,4 +1,5 @@
 import 'package:exes/models/expense.dart';
+import 'package:exes/models/transaction_filter.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -41,19 +42,14 @@ class DatabaseHelper {
 
   Future<int> insertTransaction(ExpenseTransaction transaction) async {
     final db = await database;
-    return db.insert(
-      table,
-      transaction.toMap(),
-    );
+    return db.insert(table, transaction.toMap());
   }
 
   Future<List<ExpenseTransaction>> getAllTransactions() async {
     final db = await database;
     final maps = await db.query(table);
 
-    return maps
-        .map((map) => ExpenseTransaction.fromMap(map))
-        .toList();
+    return maps.map((map) => ExpenseTransaction.fromMap(map)).toList();
   }
 
   Future<void> updateTransaction(ExpenseTransaction transaction) async {
@@ -70,6 +66,7 @@ class DatabaseHelper {
     final db = await database;
     await db.delete(table, where: "id = ?", whereArgs: [id]);
   }
+
   Future<void> clearAllTransactions() async {
     final db = await database;
     await db.delete(table);
@@ -89,5 +86,74 @@ class DatabaseHelper {
     }
 
     await batch.commit(noResult: true);
+  }
+
+  Future<List<ExpenseTransaction>> getFilteredTransactions(
+    TransactionFilter filter,
+  ) async {
+    final db = await database;
+
+    String query = "SELECT * FROM $table WHERE 1 = 1";
+
+    final List<Object?> arguments = [];
+
+    if (filter.type != "All") {
+      query += " AND type = ?";
+      arguments.add(filter.type);
+    }
+
+    if (filter.category != "All") {
+      query += " AND category = ?";
+      arguments.add(filter.category);
+    }
+
+    query += " AND amount >= ?";
+    arguments.add(filter.startAmount);
+
+    query += " AND amount <= ?";
+    arguments.add(filter.endAmount);
+
+    if (filter.startDate != null) {
+      query += " AND date >= ?";
+      arguments.add(filter.startDate!.toIso8601String());
+    }
+
+    if (filter.endDate != null) {
+      query += " AND date <= ?";
+      arguments.add(filter.endDate!.toIso8601String());
+    }
+
+    switch (filter.sortBy) {
+      case "Date (Newest First)":
+        query += " ORDER BY date DESC";
+        break;
+
+      case "Date (Oldest First)":
+        query += " ORDER BY date ASC";
+        break;
+
+      case "Amount (High to Low)":
+        query += " ORDER BY amount DESC";
+        break;
+
+      case "Amount (Low to High)":
+        query += " ORDER BY amount ASC";
+        break;
+
+      case "Category (A-Z)":
+        query += " ORDER BY category ASC";
+        break;
+
+      case "Category (Z-A)":
+        query += " ORDER BY category DESC";
+        break;
+
+      default:
+        query += " ORDER BY date DESC";
+    }
+
+    final List<Map<String, dynamic>> maps = await db.rawQuery(query, arguments);
+
+    return maps.map((e) => ExpenseTransaction.fromMap(e)).toList();
   }
 }

@@ -4,9 +4,8 @@
   import 'package:exes/screens/transaction_history_screen.dart';
   import 'package:exes/screens/home_screen.dart';
   import 'package:exes/screens/settings_screen.dart';
-import 'package:exes/services/import_export_service.dart';
+  import 'package:exes/services/import_export_service.dart';
   import 'package:exes/widgets/expense_bottom_sheet.dart';
-import 'package:exes/widgets/filter_bottom_sheet.dart';
   import 'package:exes/widgets/floating_action_button.dart';
   import 'package:exes/widgets/navigation_bar.dart';
   import 'package:flutter/material.dart';
@@ -42,20 +41,6 @@ import 'package:exes/widgets/filter_bottom_sheet.dart';
         useSafeArea: true,
         backgroundColor: Colors.transparent,
         builder: (_) => ExpenseBottomSheet(onAdd: insertTransaction),
-      );
-
-      if (added == true) {
-        await loadTransactions();
-      }
-    }
-
-    Future<void> openFilterBottomSheet() async {
-      final added = await showModalBottomSheet<bool>(
-        context: context,
-        isScrollControlled: true,
-        useSafeArea: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => FilterBottomSheet(),
       );
 
       if (added == true) {
@@ -138,7 +123,6 @@ import 'package:exes/widgets/filter_bottom_sheet.dart';
                 transactions: transactions,
                 onDelete: deleteTransaction,
                 onTap : editTransaction,
-                onFilter: openFilterBottomSheet,
               ),
               SettingsScreen(
                 onClearAll: clearAllTransactions,
