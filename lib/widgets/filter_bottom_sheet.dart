@@ -43,7 +43,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
   String selectedCategory = "All";
   String selectedSort = "Date (Newest First)";
   double startAmount = 200.0;
-  double endAmount = 1000.0;
+  double endAmount = 10000.0;
 
   @override
   void initState() {
@@ -228,63 +228,113 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   ),
                   child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Text(
-                      "💰 Amount Range",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "💰Amount Range",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            "₹${startAmount.toStringAsFixed(0)} - ₹${endAmount.toStringAsFixed(0)}",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     ),
                   ),
-                ),
+                const SizedBox(height: 12),
                 SizedBox(
                   width: MediaQuery.of(context).size.width / 1.2,
                   child: Column(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          trackHeight: 6,
 
-                        children: [
-                          Text(
-                            "${settings.currency}${startAmount.toStringAsFixed(0)}",
+                          activeTrackColor: Theme.of(context).colorScheme.primary,
+
+                          inactiveTrackColor:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+
+                          thumbColor: Theme.of(context).colorScheme.primary,
+
+                          overlayColor: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withValues(alpha: .15),
+
+                          valueIndicatorColor:
+                          Theme.of(context).colorScheme.primary,
+
+                          valueIndicatorTextStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
                           ),
 
-                          Text(
-                            "${settings.currency}${endAmount.toStringAsFixed(0)}",
+                          thumbShape: const RoundSliderThumbShape(
+                            enabledThumbRadius: 9,
                           ),
-                        ],
-                      ),
-                      RangeSlider(
-                        values: RangeValues(100.0, 10000.0),
-                        min: 100.0,
-                        max: 10000.0,
-                        // divisions: 10,
-                        activeColor: Theme.of(context).colorScheme.primary,
-                        inactiveColor: Theme.of(context).colorScheme.outline,
-                        // onChangeStart: (value) {
-                        //   setState(() {
-                        //     startAmount = value.start;
-                        //     endAmount = value.end;
-                        //   });
-                        // },
-                        // onChangeEnd: (value){
-                        //   setState(() {
-                        //     startAmount = value.start;
-                        //     endAmount = value.end;
-                        //   });
-                        // },
-                        labels: RangeLabels(
-                          "Start${startAmount.toStringAsFixed(2)}",
-                          endAmount.toStringAsFixed(2),
+
+                          overlayShape: const RoundSliderOverlayShape(
+                            overlayRadius: 18,
+                          ),
+
+                          rangeTrackShape: const RoundedRectRangeSliderTrackShape(),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            startAmount = value.start;
-                            endAmount = value.end;
-                          });
-                        },
+                        child: RangeSlider(
+                          values: RangeValues(startAmount, endAmount),
+
+                          min: 0,
+
+                          max: 100000,
+
+                          divisions: 100,
+
+                          labels: RangeLabels(
+                            "₹${startAmount.toStringAsFixed(0)}",
+                            "₹${endAmount.toStringAsFixed(0)}",
+                          ),
+
+                          onChanged: (values) {
+                            setState(() {
+                              startAmount = values.start;
+                              endAmount = values.end;
+                            });
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "₹0",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            Text(
+                              "₹100K",
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ),
+                  )
                 ),
                 const SizedBox(height: 16),
                 Padding(

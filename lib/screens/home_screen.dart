@@ -9,16 +9,15 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          IntroCard( transactions : transactions),
-          SizedBox(height:16),
-          RecentTransactions( transactions : transactions),
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      // crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(height:24),
+        IntroCard( transactions : transactions),
+        SizedBox(height:16),
+        RecentTransactions( transactions : transactions),
+      ],
     );
   }
 }

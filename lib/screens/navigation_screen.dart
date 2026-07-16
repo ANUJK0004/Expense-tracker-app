@@ -104,37 +104,35 @@
 
     @override
     Widget build(BuildContext context) {
-      return SafeArea(
-        child: Scaffold(
-          bottomNavigationBar: ScreensNavigationBar(
-            changedIndex: (index) {
-              setState(() {
-                currentIndex = index;
-              });
-            },
-            currentIndex: currentIndex,
-          ),
-          body: IndexedStack(
-            index: currentIndex,
-            children: [
-              HomeScreen(transactions: transactions),
-              AnalyticsScreen(transactions: transactions),
-              TransactionsHistory(
-                transactions: transactions,
-                onDelete: deleteTransaction,
-                onTap : editTransaction,
-              ),
-              SettingsScreen(
-                onClearAll: clearAllTransactions,
-                onExportCSV: exportCSV,
-                onExportJson: exportJson,
-                onImportJson: importJson,
-              ),
-            ],
-          ),
-          floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openExpenseBottomSheet) : null,
-          floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      return Scaffold(
+        bottomNavigationBar: ScreensNavigationBar(
+          changedIndex: (index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          currentIndex: currentIndex,
         ),
+        body: IndexedStack(
+          index: currentIndex,
+          children: [
+            HomeScreen(transactions: transactions),
+            AnalyticsScreen(transactions: transactions),
+            TransactionsHistory(
+              transactions: transactions,
+              onDelete: deleteTransaction,
+              onTap : editTransaction,
+            ),
+            SettingsScreen(
+              onClearAll: clearAllTransactions,
+              onExportCSV: exportCSV,
+              onExportJson: exportJson,
+              onImportJson: importJson,
+            ),
+          ],
+        ),
+        floatingActionButton: currentIndex == 0?AddExpenseButton(onPressed: openExpenseBottomSheet) : null,
+        floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       );
     }
   }
