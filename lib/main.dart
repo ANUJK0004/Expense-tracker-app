@@ -1,4 +1,4 @@
-import 'package:exes/screens/navigation_screen.dart';
+import 'package:exes/screens/splash_screen.dart';
 import 'package:exes/services/settings_controller.dart';
 import 'package:exes/theme/app_theme.dart';
 import 'package:exes/theme/theme_controller.dart';
@@ -44,7 +44,7 @@ class ExesApp extends StatelessWidget {
 
       themeMode: themeController.themeMode,
 
-      home: const NavigationScreen(),
+      home: const SplashScreen(),
     );
   }
 }
